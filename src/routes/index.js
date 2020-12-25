@@ -1,4 +1,5 @@
-const router = require('express').Router();
+const express = require('express');
+const router = new express.Router();
 
 router.use('/health', (req, res) => {
   res.send('OK');
