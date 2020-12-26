@@ -20,6 +20,9 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING(32),
       allowNull: false,
     },
+  }, {
+    charset: 'utf8mb4',
+    collate: 'utf8mb4_general_ci',
   });
   return Emoji;
 };
