@@ -1,13 +1,13 @@
-const { Sequelize } = require('sequelize');
+const {Sequelize} = require('sequelize');
 const config = require('../configs/mysql_config');
 const sequelize = new Sequelize(
-  config.database,
-  config.username,
-  config.password,
-  {
-    host: config.host,
-    dialect: config.dialect,
-  }
+    config.database,
+    config.username,
+    config.password,
+    {
+      host: config.host,
+      dialect: config.dialect,
+    },
 );
 const db = {
   sequelize,
