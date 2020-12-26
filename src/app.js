@@ -4,7 +4,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const router = require('./routes');
 const morgan = require('./middlewares/morgan');
-const limiter = require('./middlewares/express_rate_limit');
+const limiter = require('./middlewares/express-rate-limit');
+const db = require('./models');
 const cors = require('cors');
 
 app.use(morgan);
@@ -23,3 +24,9 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Listening at ${PORT}`);
 });
+
+db.sequelize.sync().catch((err) => {
+  console.error(err);
+  process.exit();
+});
+
