@@ -19,7 +19,9 @@
   "homepage": "https://github.com/pengin7384/dear-world-backend#readme",
   "dependencies": {
     "dotenv": "^8.2.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "mysql2": "^2.2.5",
+    "sequelize": "^6.3.5"
   },
   "lint-staged": {
     "*.js": ["eslint . --fix", "prettier --write"]
