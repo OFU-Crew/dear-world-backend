@@ -22,7 +22,7 @@ db.LikeHistory = require('./like_history')(sequelize);
 db.Emoji = require('./emoji')(sequelize);
 
 // Associations
-db.CountryStatus.hasOne(db.Country, {
+db.Country.hasOne(db.CountryStatus, {
   foreignKey: 'country_id',
 });
 db.AnonymousUser.belongsTo(db.Country, {
