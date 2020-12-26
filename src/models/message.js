@@ -21,6 +21,9 @@ module.exports = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+  }, {
+    charset: 'utf8',
+    collate: 'utf8_unicode_ci',
   });
   return Message;
 };
