@@ -3,7 +3,8 @@
   ],
   "extends": "google",
   "rules": {
-    "new-cap": 0
+    "new-cap": 0,
+    "require-jsdoc": 0
   },
   "parserOptions": {
     "ecmaVersion": 2017
