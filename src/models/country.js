@@ -1,7 +1,7 @@
 const {DataTypes} = require('sequelize');
 
 module.exports = (sequelize) => {
-  const Country = sequelize.define('Country', {
+  const Country = sequelize.define('country', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -12,14 +12,19 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING(3),
       allowNull: false,
     },
-    full_name: {
+    fullName: {
       type: DataTypes.STRING(80),
       allowNull: false,
     },
-    emoji_unicode: {
+    emojiUnicode: {
       type: DataTypes.STRING(20),
       allowNull: false,
     },
+  }, {
+    charset: 'utf8mb4',
+    collate: 'utf8mb4_unicode_ci',
+    timestamps: true,
+    underscored: true,
   });
   return Country;
 };

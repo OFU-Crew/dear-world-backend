@@ -1,7 +1,7 @@
 const {DataTypes} = require('sequelize');
 
 module.exports = (sequelize) => {
-  const AnonymousUser = sequelize.define('AnonymousUser', {
+  const AnonymousUser = sequelize.define('anonymous_user', {
     id: {
       type: DataTypes.BIGINT,
       allowNull: false,
@@ -12,6 +12,11 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
+  }, {
+    charset: 'utf8',
+    collate: 'utf8_unicode_ci',
+    timestamps: true,
+    underscored: true,
   });
   return AnonymousUser;
 };
