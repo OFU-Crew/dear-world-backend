@@ -77,7 +77,7 @@ async function getMessages(req, res, next) {
   res.status(200).json(Response(1, 'SUCCESS_GET_MESSAGE_LIST', {
     'firstId': mockMessages[offset || 0].uuid,
     'lastId': mockMessages[offset + 29 || 29].uuid,
-    'messages': mockMessages,
+    'messages': mockMessages.slice(offset, offset+30),
   }));
 }
 
