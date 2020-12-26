@@ -23,8 +23,8 @@
     "express-rate-limit": "^5.2.3",
     "morgan": "^1.10.0",
     "mysql2": "^2.2.5",
-    "pm2": "^4.5.1",
-    "sequelize": "^6.3.5"
+    "sequelize": "^6.3.5",
+    "pm2": "^4.5.1"
   },
   "lint-staged": {
     "*.js": [
