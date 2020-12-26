@@ -24,7 +24,10 @@
     "sequelize": "^6.3.5"
   },
   "lint-staged": {
-    "*.js": ["eslint . --fix", "prettier --write"]
+    "*.js": [
+      "eslint . --fix",
+      "prettier --write"
+    ]
   },
   "husky": {
     "hooks": {
