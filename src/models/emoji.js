@@ -1,7 +1,7 @@
-const {DataTypes} = require('sequelize');
+const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-  const Emoji = sequelize.define('LikeHistory', {
+  const Emoji = sequelize.define('Emoji', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
