@@ -29,13 +29,13 @@ async function addMessage(req, res, next) {
   }
 }
 
-async function getMessages(req, res, next) {
+function getMessages(req, res, next) {
   const {
     countryId,
     offset,
   } = req.query;
 
-  if (!countryId || !offset) {
+  if (countryId === undefined || offset === undefined) {
     res.status(422).json(Response(-1, 'INVALID_REQUEST_PARAMETERS'));
     return;
   }
@@ -75,9 +75,9 @@ async function getMessages(req, res, next) {
   }
 
   res.status(200).json(Response(1, 'SUCCESS_GET_MESSAGE_LIST', {
-    'firstId': mockMessages[offset || 0].uuid,
-    'lastId': mockMessages[offset + 29 || 29].uuid,
-    'messages': mockMessages.slice(offset, offset+30),
+    'firstId': mockMessages[Number(offset)].uuid,
+    'lastId': mockMessages[Number(offset) + 29].uuid,
+    'messages': mockMessages.slice(Number(offset), Number(offset)+30),
   }));
 }
 
