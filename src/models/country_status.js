@@ -20,6 +20,9 @@ module.exports = (sequelize) => {
       type: DataTypes.BIGINT,
       allowNull: true,
     },
+  }, {
+    charset: 'utf8',
+    collate: 'utf8_unicode_ci',
   });
   return CountryStatus;
 };

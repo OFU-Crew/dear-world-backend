@@ -20,6 +20,9 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING(20),
       allowNull: false,
     },
+  }, {
+    charset: 'utf8',
+    collate: 'utf8_unicode_ci',
   });
   return Country;
 };
