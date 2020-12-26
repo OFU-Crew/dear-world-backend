@@ -41,12 +41,31 @@ function getMessages(req, res, next) {
   }
 
   const mockMessages = [];
-  const allowedEmoji = '😊🙃🤪🤓🤯😴💩👻👽🤖👾👐🖖✌️🤟🤘🤙👋🐭🦕🦖🐉';
+  const allowedEmoji = [...'😊🙃🤪🤓🤯😴💩👻👽🤖👾👐🖖✌️🤟🤘🤙👋🐭🦕🦖🐉'];
 
   for (let i = 0; i < 1000; ++i) {
-    const countryCode = faker.address.countryCode();
+    let countryCode = faker.address.countryCode();
+    if (i % 20 <= 8) {
+      countryCode = 'kr';
+    } else if (i % 20 <= 12) {
+      countryCode = 'jp';
+    } else if (i % 20 <= 16) {
+      countryCode = 'zh_CN';
+    }
+
     const countryImage = flag(countryCode);
     const countryFullName = name(countryImage);
+
+    let locale = 'en';
+    if (countryCode === 'kr') {
+      locale = 'ko';
+    } else if (countryCode === 'jp') {
+      locale = 'ja';
+    } else if (countryCode === 'cn') {
+      locale = 'zh_CN';
+    }
+
+    faker.locale = locale;
 
     mockMessages.push({
       'uuid': faker.random.uuid(),
@@ -57,12 +76,12 @@ function getMessages(req, res, next) {
           'fullName': countryFullName,
           'image': countryImage,
         },
-        'nickname': faker.name.findName(),
-        'profileImage': allowedEmoji[
+        'nickname': allowedEmoji[
             Math.floor(
                 Math.random() * allowedEmoji.length,
             )
         ],
+        'profileImage': faker.image.imageUrl(200, 200),
       },
       'content': faker.lorem.paragraphs(Math.floor(Math.random() * 8) + 1),
       'likeCount': faker.random.number(10000),
