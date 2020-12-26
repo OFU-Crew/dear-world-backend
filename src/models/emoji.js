@@ -8,7 +8,7 @@ module.exports = (sequelize) => {
       autoIncrement: true,
       primaryKey: true,
     },
-    image_url: {
+    imageUrl: {
       type: DataTypes.STRING(255),
       allowNull: true,
     },
@@ -19,6 +19,8 @@ module.exports = (sequelize) => {
   }, {
     charset: 'utf8mb4',
     collate: 'utf8mb4_unicode_ci',
+    timestamps: true,
+    underscored: true,
   });
   return Emoji;
 };

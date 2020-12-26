@@ -15,6 +15,8 @@ module.exports = (sequelize) => {
   }, {
     charset: 'utf8',
     collate: 'utf8_unicode_ci',
+    timestamps: true,
+    underscored: true,
   });
   return AnonymousUser;
 };
