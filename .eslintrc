@@ -1,6 +1,10 @@
 {
+  "plugins": [
+    "prettier"
+  ],
   "extends": "google",
   "rules": {
+    "prettier/prettier": "error"
   },
   "parserOptions": {
     "ecmaVersion": 2017
