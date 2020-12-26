@@ -12,17 +12,19 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING(3),
       allowNull: false,
     },
-    full_name: {
+    fullName: {
       type: DataTypes.STRING(80),
       allowNull: false,
     },
-    emoji_unicode: {
+    emojiUnicode: {
       type: DataTypes.STRING(20),
       allowNull: false,
     },
   }, {
     charset: 'utf8',
     collate: 'utf8_unicode_ci',
+    timestamps: true,
+    underscored: true,
   });
   return Country;
 };

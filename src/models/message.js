@@ -17,13 +17,15 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING(300),
       allowNull: false,
     },
-    like_count: {
+    likeCount: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
   }, {
     charset: 'utf8',
     collate: 'utf8_unicode_ci',
+    timestamps: true,
+    underscored: true,
   });
   return Message;
 };

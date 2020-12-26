@@ -8,11 +8,11 @@ module.exports = (sequelize) => {
       autoIncrement: true,
       primaryKey: true,
     },
-    message_count: {
+    messageCount: {
       type: DataTypes.BIGINT,
       allowNull: false,
     },
-    like_count: {
+    likeCount: {
       type: DataTypes.BIGINT,
       allowNull: false,
     },
@@ -23,6 +23,8 @@ module.exports = (sequelize) => {
   }, {
     charset: 'utf8',
     collate: 'utf8_unicode_ci',
+    timestamps: true,
+    underscored: true,
   });
   return CountryStatus;
 };
