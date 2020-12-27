@@ -1022,4 +1022,10 @@ async function main() {
   }
 }
 
-main();
+(async () => {
+  try {
+    main();
+  } catch (error) {
+    console.error(error);
+  }
+})();
