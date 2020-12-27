@@ -4,7 +4,7 @@ module.exports = (sequelize) => {
   class LikeHistory extends Model {
     static associate(models) {
       this.belongsTo(models.Message, {
-        foreignKey: 'message_id',
+        foreignKey: 'messageId',
       });
     }
   };

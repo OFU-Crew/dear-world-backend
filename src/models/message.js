@@ -4,7 +4,7 @@ module.exports = (sequelize) => {
   class Message extends Model {
     static associate(models) {
       this.belongsTo(models.AnonymousUser, {
-        foreignKey: 'anonymous_user_id',
+        foreignKey: 'anonymousUserId',
       });
     }
   };
