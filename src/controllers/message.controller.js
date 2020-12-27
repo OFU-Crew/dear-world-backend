@@ -1,4 +1,4 @@
-// const messageService = require('../services/message.service');
+const messageService = require('../services/message.service');
 const multipleService = require('../services/multiple.service');
 const {Success, Failure} = require('../utils/response');
 const faker = require('faker');
@@ -100,7 +100,28 @@ function getMessages(req, res, next) {
   }));
 }
 
+async function postLikeMessage(req, res, next) {
+  const {messageId} = req.params;
+  const ipv4 = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+  if (messageId === undefined) {
+    res.status(200).json(Failure('messageId must be exist'));
+    return;
+  }
+
+  try {
+    const messageModelAfterLike = await messageService.likeMessage(
+        messageId,
+        ipv4,
+    );
+    res.status(200).json(Success(messageModelAfterLike));
+  } catch (error) {
+    res.status(200).json(Failure(error.message));
+  }
+}
+
 module.exports = {
   addMessage,
   getMessages,
+  postLikeMessage,
 };

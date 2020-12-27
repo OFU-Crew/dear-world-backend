@@ -40,15 +40,18 @@ async function main() {
     try {
       await emojiService.addEmoji(String.fromCodePoint(parseInt(data, 16)));
     } catch (error) {
-      console.error(error);
     }
   }
 }
 
-(async () => {
-  try {
-    main();
-  } catch (error) {
-    console.error(error);
-  }
-})();
+if (require.main === module) {
+  (async () => {
+    try {
+      main();
+    } catch (error) {
+      console.error(error);
+    }
+  })();
+}
+
+module.exports = main;

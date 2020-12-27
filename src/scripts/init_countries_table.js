@@ -1017,15 +1017,18 @@ async function main() {
       await countryService.addCountry(data.countryCode, data.fullName,
           countryCodeToEmoji(data.countryCode));
     } catch (error) {
-      console.error(error);
     }
   }
 }
 
-(async () => {
-  try {
-    main();
-  } catch (error) {
-    console.error(error);
-  }
-})();
+if (require.main === module) {
+  (async () => {
+    try {
+      main();
+    } catch (error) {
+      console.error(error);
+    }
+  })();
+}
+
+module.exports = main;

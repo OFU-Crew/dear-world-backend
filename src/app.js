@@ -3,6 +3,8 @@ const dotenv = require('dotenv');
 
 if (process.env.NODE_ENV === 'production') {
   dotenv.config({path: path.join(__dirname, '../.env.production')});
+} else if (process.env.NODE_ENV === 'test') {
+  dotenv.config({path: path.join(__dirname, '../.env.test')});
 } else if (process.env.NODE_ENV === 'develop' ||
               process.env.NODE_ENV === undefined) {
   dotenv.config({path: path.join(__dirname, '../.env.develop')});
@@ -36,7 +38,15 @@ app.listen(PORT, () => {
   console.log(`Listening at ${PORT}`);
 });
 
-db.sequelize.sync().catch((err) => {
+
+const syncOptions = {};
+if (process.env.NODE_ENV === 'develop') {
+  syncOptions.alter = true;
+} else if (process.env.NODE_ENV === 'test') {
+  syncOptions.force = true;
+}
+
+db.sequelize.sync(syncOptions).catch((err) => {
   console.error(err);
   process.exit();
 });
