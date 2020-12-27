@@ -3,29 +3,31 @@ const {Model, DataTypes} = require('sequelize');
 module.exports = (sequelize) => {
   class CountryStatus extends Model {
     static associate(models) {
-      // Empty
+      this.belongsTo(models.Country, {
+        foreignKey: 'countryId',
+      });
     }
   };
 
   CountryStatus.init({
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT.UNSIGNED,
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
     },
     messageCount: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.BIGINT.UNSIGNED,
       allowNull: false,
       defaultValue: 0,
     },
     likeCount: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.BIGINT.UNSIGNED,
       allowNull: false,
       defaultValue: 0,
     },
     population: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.BIGINT.UNSIGNED,
       allowNull: true,
     },
   }, {

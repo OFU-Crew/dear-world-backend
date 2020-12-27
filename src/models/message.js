@@ -11,23 +11,17 @@ module.exports = (sequelize) => {
 
   Message.init({
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT,
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
-    },
-    uuid: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      defaultValue: DataTypes.UUIDV4,
-      unique: true,
     },
     content: {
       type: DataTypes.STRING(300),
       allowNull: false,
     },
     likeCount: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT.UNSIGNED,
       allowNull: false,
       defaultValue: 0,
     },
