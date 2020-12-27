@@ -4,7 +4,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const router = require('./routes');
 const morgan = require('./middlewares/morgan');
-const limiter = require('./middlewares/express-rate-limit');
+const limiter = require('./middlewares/express_rate_limit');
 const db = require('./models');
 const cors = require('cors');
 
