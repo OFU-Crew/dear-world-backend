@@ -1,20 +1,21 @@
 // 여러 Service를 사용해야하는 로직 모음
 const messageService = require('./message.service');
 const userService = require('./anonymous_user.service');
+const countryService = require('./country.service');
 
 // TODO: Implement
 async function addAnonymousUserAndMessage(
-    content, countryCode, emojiUnicode, nickname) {
+    content, countryCode, emojiId, nickname) {
+  // Get Country ID
+  const countryId = await countryService.getCountryId(countryCode);
+
   // Add user
-  await userService.addAnonymousUser();
+  const anonymousUserId = await userService.addAnonymousUser(countryId, emojiId,
+      nickname);
 
   // Add message
-  await messageService.addMessage();
-
-  return {
-    uuid: 'IMUUID',
-    createdAt: '2020-02-29T21:02:57.857214+00:00',
-  };
+  const message = await messageService.addMessage(anonymousUserId, content);
+  return message;
 }
 
 module.exports = {

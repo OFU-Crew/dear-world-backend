@@ -9,18 +9,18 @@ async function addMessage(req, res, next) {
   const {
     content,
     countryCode,
-    emojiUnicode,
+    emojiId,
     nickname,
   } = req.body;
 
-  if (!content || !countryCode || !nickname || !emojiUnicode) {
+  if (!content || !countryCode || !nickname || !emojiId) {
     res.status(422).json(Response(-1, 'INVALID_REQUEST_PARAMETERS'));
     return;
   }
 
   try {
     const result = await multipleService.addAnonymousUserAndMessage(
-        content, countryCode, emojiUnicode, nickname,
+        content, countryCode, emojiId, nickname,
     );
 
     res.status(200).json(Response(1, 'SUCCESS', result));
