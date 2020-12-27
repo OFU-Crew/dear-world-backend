@@ -2,7 +2,10 @@ const {Emoji, Sequelize} = require('../models');
 
 async function getRandomEmoji() {
   const emojiModel = await Emoji.findOne(
-      {order: [Sequelize.literal('rand()')]});
+      {
+        'order': [Sequelize.literal('rand()')],
+      },
+  );
   const emojiValue = emojiModel.get();
   return {
     emojiId: emojiValue.id,
@@ -12,6 +15,7 @@ async function getRandomEmoji() {
 
 async function addEmoji(unicode) {
   const result = await Emoji.create({unicode: unicode});
+  console.log(unicode);
   return result;
 }
 

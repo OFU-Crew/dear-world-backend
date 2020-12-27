@@ -1,7 +1,15 @@
-const {DataTypes} = require('sequelize');
+const {Model, DataTypes} = require('sequelize');
 
 module.exports = (sequelize) => {
-  const Country = sequelize.define('country', {
+  class Country extends Model {
+    static associate(models) {
+      this.hasOne(models.CountryStatus, {
+        foreignKey: 'countryId',
+      });
+    }
+  };
+
+  Country.init({
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -11,20 +19,26 @@ module.exports = (sequelize) => {
     code: {
       type: DataTypes.STRING(3),
       allowNull: false,
+      unique: true,
     },
     fullName: {
       type: DataTypes.STRING(80),
       allowNull: false,
+      unique: true,
     },
     emojiUnicode: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.STRING(100),
       allowNull: false,
+      unique: true,
     },
   }, {
+    sequelize,
+    tableName: 'countries',
     charset: 'utf8mb4',
-    collate: 'utf8mb4_unicode_ci',
+    collate: 'utf8mb4_bin',
     timestamps: true,
     underscored: true,
   });
+
   return Country;
 };
