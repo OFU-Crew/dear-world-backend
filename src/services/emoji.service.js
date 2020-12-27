@@ -4,18 +4,17 @@ async function getRandomEmoji() {
   const emojiModel = await Emoji.findOne(
       {
         'order': [Sequelize.literal('rand()')],
+        'attributes': [
+          'id',
+          'unicode',
+        ],
       },
   );
-  const emojiValue = emojiModel.get();
-  return {
-    emojiId: emojiValue.id,
-    unicode: emojiValue.unicode,
-  };
+  return emojiModel;
 }
 
 async function addEmoji(unicode) {
   const result = await Emoji.create({unicode: unicode});
-  console.log(unicode);
   return result;
 }
 
