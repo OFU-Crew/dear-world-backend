@@ -1,17 +1,15 @@
-const Response = (code, message, data) => {
+const Success = (data) => {
   return {
-    code: code,
-    message: message,
+    code: 1,
     data: data,
   };
 };
 
-const Success = (data) => {
-  return Response(1, null, data);
-};
-
 const Failure = (message) => {
-  return Response(0, message, null);
+  return {
+    code: 0,
+    message: message,
+  };
 };
 
 module.exports = {
