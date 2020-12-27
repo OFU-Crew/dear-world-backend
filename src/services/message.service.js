@@ -1,6 +1,13 @@
 const {Op} = require('sequelize');
 const moment = require('moment');
-const {sequelize, CountryStatus, Message, LikeHistory} = require('../models');
+const {
+  sequelize,
+  AnonymousUser,
+  Country,
+  CountryStatus,
+  Message,
+  LikeHistory,
+} = require('../models');
 
 // TODO: Implement
 async function addMessage(anonymousUserId, content) {
@@ -21,8 +28,39 @@ async function likeMessage(messageId, ipv4) {
         [Op.eq]: messageId,
       },
     },
+    attributes: [
+      'id',
+      'content',
+      'likeCount',
+      'createdAt',
+    ],
     include: [
-      'AnonymousUser',
+      {
+        model: AnonymousUser,
+        attributes: [
+          'id',
+          'nickname',
+          'emojiId',
+        ],
+        include: {
+          model: Country,
+          attributes: [
+            'id',
+            'code',
+            'fullName',
+            'emojiUnicode',
+          ],
+          include: {
+            model: CountryStatus,
+            attributes: [
+              'id',
+              'messageCount',
+              'likeCount',
+              'population',
+            ],
+          },
+        },
+      },
     ],
   });
 
@@ -40,16 +78,21 @@ async function likeMessage(messageId, ipv4) {
 
   let like = true;
 
-  const countryId = getMessage.AnonymousUser.countryId;
-  const countryStatus = await CountryStatus.findOne(
-      {where: {countryId: countryId}},
-  );
+  const countryStatus = getMessage.AnonymousUser.Country.CountryStatus;
 
   await sequelize.transaction(async (t) => {
     if (existLikeHistory) {
-      await existLikeHistory.destroy({transaction: t});
+      if (getMessage.likeCount == 0) {
+        throw Error('The message like cannot decrease');
+      }
+
+      if (countryStatus.likeCount == 0) {
+        throw Error('The country status like cannot decrease');
+      }
+
       getMessage.likeCount -= 1;
       countryStatus.likeCount -= 1;
+      await existLikeHistory.destroy({transaction: t});
       like = false;
     } else {
       const likeHistory = await LikeHistory.create({
