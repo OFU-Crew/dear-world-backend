@@ -19,15 +19,15 @@ module.exports = (sequelize) => {
       allowNull: true,
     },
     unicode: {
-      type: DataTypes.STRING(32),
+      type: DataTypes.STRING(100),
       allowNull: false,
       unique: true,
     },
   }, {
     sequelize,
     tableName: 'emojis',
-    charset: 'utf8',
-    collate: 'utf8_unicode_ci',
+    charset: 'utf8mb4',
+    collate: 'utf8mb4_bin',
     timestamps: true,
     underscored: true,
   });
