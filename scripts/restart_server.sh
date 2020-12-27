@@ -3,5 +3,4 @@ echo '======================'
 echo 'Running restart_server'
 echo '======================'
 
-cd /home/ec2-user/app/dist/dear-world-production/
 NODE_ENV=production npx cross-env pm2 start /home/ec2-user/app/dist/dear-world-production/src/app.js -i 0 --name "admin" &
