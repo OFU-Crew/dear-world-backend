@@ -3,6 +3,7 @@ const path = require('path');
 const basename = path.basename(__filename);
 const {Sequelize} = require('sequelize');
 const config = require('../configs/mysql_config');
+
 const sequelize = new Sequelize(
     config.database,
     config.username,
