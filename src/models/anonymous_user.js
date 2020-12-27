@@ -27,8 +27,8 @@ module.exports = (sequelize) => {
   }, {
     sequelize,
     tableName: 'anonymous_users',
-    charset: 'utf8',
-    collate: 'utf8_unicode_ci',
+    charset: 'utf8mb4',
+    collate: 'utf8mb4_bin',
     timestamps: true,
     underscored: true,
     indexes: [

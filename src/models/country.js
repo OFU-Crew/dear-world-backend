@@ -27,15 +27,15 @@ module.exports = (sequelize) => {
       unique: true,
     },
     emojiUnicode: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.STRING(100),
       allowNull: false,
       unique: true,
     },
   }, {
     sequelize,
     tableName: 'countries',
-    charset: 'utf8',
-    collate: 'utf8_unicode_ci',
+    charset: 'utf8mb4',
+    collate: 'utf8mb4_bin',
     timestamps: true,
     underscored: true,
   });

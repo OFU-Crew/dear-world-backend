@@ -1001,8 +1001,12 @@ const countryService = require('../services/country.service');
 const countryCodeToEmoji = require('country-code-emoji').default;
 async function main() {
   for (const data of dataList) {
-    await countryService.addCountry(data.countryCode, data.fullName,
-        countryCodeToEmoji(data.countryCode));
+    try {
+      await countryService.addCountry(data.countryCode, data.fullName,
+          countryCodeToEmoji(data.countryCode));
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
 
