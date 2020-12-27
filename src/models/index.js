@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+const basename = path.basename(__filename);
 const {Sequelize} = require('sequelize');
 const config = require('../configs/mysql_config');
 const sequelize = new Sequelize(
@@ -14,28 +17,24 @@ const db = {
   Sequelize,
 };
 
-db.Country = require('./country')(sequelize);
-db.CountryStatus = require('./country_status')(sequelize);
-db.AnonymousUser = require('./anonymous_user')(sequelize);
-db.Message = require('./message')(sequelize);
-db.LikeHistory = require('./like_history')(sequelize);
-db.Emoji = require('./emoji')(sequelize);
+fs
+    .readdirSync(__dirname)
+    .filter((file) => {
+      return (file.indexOf('.') !== 0) &&
+          (file !== basename) &&
+          (file.slice(-3) === '.js');
+    })
+    .forEach((file) => {
+      const model = require(path.join(__dirname, file))(
+          sequelize,
+      );
+      db[model.name] = model;
+    });
 
-// Associations
-db.Country.hasOne(db.CountryStatus, {
-  foreignKey: 'countryId',
-});
-db.AnonymousUser.belongsTo(db.Country, {
-  foreignKey: 'countryId',
-});
-db.AnonymousUser.belongsTo(db.Emoji, {
-  foreignKey: 'emojiId',
-});
-db.Message.belongsTo(db.AnonymousUser, {
-  foreignKey: 'anonymousUserId',
-});
-db.LikeHistory.belongsTo(db.Message, {
-  foreignKey: 'messageId',
+Object.keys(db).forEach((modelName) => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
 });
 
 module.exports = db;

@@ -1,7 +1,15 @@
-const {DataTypes} = require('sequelize');
+const {Model, DataTypes} = require('sequelize');
 
 module.exports = (sequelize) => {
-  const LikeHistory = sequelize.define('like_history', {
+  class LikeHistory extends Model {
+    static associate(models) {
+      this.belongsTo(models.Message, {
+        foreignKey: 'message_id',
+      });
+    }
+  };
+
+  LikeHistory.init({
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -13,10 +21,18 @@ module.exports = (sequelize) => {
       allowNull: false,
     },
   }, {
+    sequelize,
+    tableName: 'like_historyies',
     charset: 'utf8',
     collate: 'utf8_unicode_ci',
     timestamps: true,
     underscored: true,
+    indexes: [
+      {
+        fields: ['ipv4'],
+      },
+    ],
   });
+
   return LikeHistory;
 };
