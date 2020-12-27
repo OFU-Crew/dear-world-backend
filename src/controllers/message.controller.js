@@ -1,6 +1,6 @@
 // const messageService = require('../services/message.service');
 const multipleService = require('../services/multiple.service');
-const Response = require('../utils/response');
+const {Success, Failure} = require('../utils/response');
 const faker = require('faker');
 const {flag, name} = require('country-emoji');
 
@@ -9,23 +9,23 @@ async function addMessage(req, res, next) {
   const {
     content,
     countryCode,
-    emojiUnicode,
+    emojiId,
     nickname,
   } = req.body;
 
-  if (!content || !countryCode || !nickname || !emojiUnicode) {
-    res.status(422).json(Response(-1, 'INVALID_REQUEST_PARAMETERS'));
+  if (!content || !countryCode || !nickname || !emojiId) {
+    res.status(200).json(Failure('Invalid body'));
     return;
   }
 
   try {
     const result = await multipleService.addAnonymousUserAndMessage(
-        content, countryCode, emojiUnicode, nickname,
+        content, countryCode, emojiId, nickname,
     );
 
-    res.status(200).json(Response(1, 'SUCCESS', result));
+    res.status(200).json(Success(result));
   } catch (err) {
-    next(err);
+    res.status(200).json(Failure(err.message));
   }
 }
 
@@ -36,7 +36,7 @@ function getMessages(req, res, next) {
   } = req.query;
 
   if (countryId === undefined || offset === undefined) {
-    res.status(422).json(Response(-1, 'INVALID_REQUEST_PARAMETERS'));
+    res.status(200).json(Failure('Invalid request parameters'));
     return;
   }
 
@@ -93,7 +93,7 @@ function getMessages(req, res, next) {
     });
   }
 
-  res.status(200).json(Response(1, 'SUCCESS_GET_MESSAGE_LIST', {
+  res.status(200).json(Success({
     'firstId': mockMessages[Number(offset)].uuid,
     'lastId': mockMessages[Number(offset) + 29].uuid,
     'messages': mockMessages.slice(Number(offset), Number(offset)+30),

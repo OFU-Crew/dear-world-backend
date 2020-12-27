@@ -1,25 +1,41 @@
-const {DataTypes} = require('sequelize');
+const {Model, DataTypes} = require('sequelize');
 
 module.exports = (sequelize) => {
-  const CountryStatus = sequelize.define('CountryStatus', {
+  class CountryStatus extends Model {
+    static associate(models) {
+      // Empty
+    }
+  };
+
+  CountryStatus.init({
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
     },
-    message_count: {
+    messageCount: {
       type: DataTypes.BIGINT,
       allowNull: false,
+      defaultValue: 0,
     },
-    like_count: {
+    likeCount: {
       type: DataTypes.BIGINT,
       allowNull: false,
+      defaultValue: 0,
     },
     population: {
       type: DataTypes.BIGINT,
       allowNull: true,
     },
+  }, {
+    sequelize,
+    tableName: 'country_statuses',
+    charset: 'utf8mb4',
+    collate: 'utf8mb4_bin',
+    timestamps: true,
+    underscored: true,
   });
+
   return CountryStatus;
 };

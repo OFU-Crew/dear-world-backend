@@ -1,25 +1,36 @@
-const {DataTypes} = require('sequelize');
+const {Model, DataTypes} = require('sequelize');
 
 module.exports = (sequelize) => {
-  const Emoji = sequelize.define('Emoji', {
+  class Emoji extends Model {
+    static associate(models) {
+      // Empty
+    }
+  };
+
+  Emoji.init({
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
     },
-    ipv4: {
-      type: DataTypes.STRING(20),
-      allowNull: false,
-    },
-    image_url: {
+    imageUrl: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: true,
     },
     unicode: {
-      type: DataTypes.STRING(32),
+      type: DataTypes.STRING(100),
       allowNull: false,
+      unique: true,
     },
+  }, {
+    sequelize,
+    tableName: 'emojis',
+    charset: 'utf8mb4',
+    collate: 'utf8mb4_bin',
+    timestamps: true,
+    underscored: true,
   });
+
   return Emoji;
 };

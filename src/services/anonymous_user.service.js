@@ -1,8 +1,15 @@
-// const AnonymousUser = require('../models/anonymous_user');
+const AnonymousUser = require('../models').AnonymousUser;
 
-// TODO: Implement
-async function addAnonymousUser() {
-
+async function addAnonymousUser(countryId, emojiId, nickname) {
+  const anonymousUserModel = await AnonymousUser.create({
+    countryId: countryId,
+    emojiId: emojiId,
+    nickname: nickname,
+  });
+  if (!anonymousUserModel) {
+    throw Error(`Can't create anonymousUser`);
+  }
+  return anonymousUserModel.id;
 }
 
 module.exports = {
