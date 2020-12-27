@@ -1,7 +1,13 @@
-const {DataTypes} = require('sequelize');
+const {Model, DataTypes} = require('sequelize');
 
 module.exports = (sequelize) => {
-  const Emoji = sequelize.define('emoji', {
+  class Emoji extends Model {
+    static associate(models) {
+      // Empty
+    }
+  };
+
+  Emoji.init({
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -15,12 +21,16 @@ module.exports = (sequelize) => {
     unicode: {
       type: DataTypes.STRING(32),
       allowNull: false,
+      unique: true,
     },
   }, {
-    charset: 'utf8mb4',
-    collate: 'utf8mb4_unicode_ci',
+    sequelize,
+    tableName: 'emojis',
+    charset: 'utf8',
+    collate: 'utf8_unicode_ci',
     timestamps: true,
     underscored: true,
   });
+
   return Emoji;
 };
