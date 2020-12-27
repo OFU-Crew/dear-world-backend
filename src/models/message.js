@@ -20,6 +20,7 @@ module.exports = (sequelize) => {
     likeCount: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      defaultValue: 0,
     },
   }, {
     charset: 'utf8',
