@@ -4,11 +4,11 @@ module.exports = (sequelize) => {
   class AnonymousUser extends Model {
     static associate(models) {
       this.belongsTo(models.Country, {
-        foreignKey: 'country_id',
+        foreignKey: 'countryId',
       });
 
       this.belongsTo(models.Emoji, {
-        foreignKey: 'emoji_id',
+        foreignKey: 'emojiId',
       });
     }
   }

@@ -4,7 +4,7 @@ module.exports = (sequelize) => {
   class Country extends Model {
     static associate(models) {
       this.hasOne(models.CountryStatus, {
-        foreignKey: 'country_id',
+        foreignKey: 'countryId',
       });
     }
   };
