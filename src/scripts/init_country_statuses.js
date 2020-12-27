@@ -18,15 +18,18 @@ async function main() {
     try {
       await countryService.addCountryStatus(country.get().id);
     } catch (error) {
-      console.error(error);
     }
   }
 }
 
-(async () => {
-  try {
-    main();
-  } catch (error) {
-    console.error(error);
-  }
-})();
+if (require.main === module) {
+  (async () => {
+    try {
+      main();
+    } catch (error) {
+      console.error(error);
+    }
+  })();
+}
+
+module.exports = main;

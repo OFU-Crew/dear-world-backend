@@ -9,7 +9,7 @@ module.exports = (sequelize) => {
 
   Emoji.init({
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT.UNSIGNED,
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,

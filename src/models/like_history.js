@@ -11,7 +11,7 @@ module.exports = (sequelize) => {
 
   LikeHistory.init({
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT,
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,

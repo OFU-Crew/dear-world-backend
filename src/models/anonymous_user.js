@@ -10,12 +10,16 @@ module.exports = (sequelize) => {
       this.belongsTo(models.Emoji, {
         foreignKey: 'emojiId',
       });
+
+      this.hasOne(models.Message, {
+        foreignKey: 'anonymousUserId',
+      });
     }
   }
 
   AnonymousUser.init({
     id: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.BIGINT.UNSIGNED,
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,

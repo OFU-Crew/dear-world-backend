@@ -4,5 +4,6 @@ const messageController = require('../../../controllers/message.controller');
 
 router.post('/', messageController.addMessage);
 router.get('/', messageController.getMessages);
+router.post('/:messageId/like', messageController.postLikeMessage);
 
 module.exports = router;
