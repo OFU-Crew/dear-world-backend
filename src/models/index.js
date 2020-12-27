@@ -23,19 +23,19 @@ db.Emoji = require('./emoji')(sequelize);
 
 // Associations
 db.Country.hasOne(db.CountryStatus, {
-  foreignKey: 'country_id',
+  foreignKey: 'countryId',
 });
 db.AnonymousUser.belongsTo(db.Country, {
-  foreignKey: 'country_id',
+  foreignKey: 'countryId',
 });
 db.AnonymousUser.belongsTo(db.Emoji, {
-  foreignKey: 'emoji_id',
+  foreignKey: 'emojiId',
 });
 db.Message.belongsTo(db.AnonymousUser, {
-  foreignKey: 'anonymous_user_id',
+  foreignKey: 'anonymousUserId',
 });
 db.LikeHistory.belongsTo(db.Message, {
-  foreignKey: 'message_id',
+  foreignKey: 'messageId',
 });
 
 module.exports = db;
