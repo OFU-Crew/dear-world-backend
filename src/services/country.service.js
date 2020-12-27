@@ -21,7 +21,11 @@ async function getCountryId(countryCode) {
 async function addCountryStatus(countryId, allowDuplicate = false) {
   if (!allowDuplicate) {
     const countryStatus = await CountryStatus.findOne(
-        {where: {countryId: countryId}},
+        {
+          where: {
+            countryId: countryId,
+          },
+        },
     );
 
     if (countryStatus) {
@@ -38,8 +42,14 @@ async function addCountryStatus(countryId, allowDuplicate = false) {
 async function getCountryStatus(countryId) {
   const countryStatusModel = await CountryStatus.findOne(
       {
-        where: {countryId: countryId},
-        include: Country,
+        where: {
+          countryId: countryId,
+        },
+        attributes: [
+          'id',
+          'messageCount',
+          'likeCount',
+        ],
       },
   );
   if (!countryStatusModel) {
@@ -68,7 +78,15 @@ async function getCountryRank() {
           ['messageCount', 'DESC'],
         ],
         limit: 10,
-        include: [Country],
+        include: {
+          model: Country,
+          attributes: [
+            'id',
+            'code',
+            'fullName',
+            'emojiUnicode',
+          ],
+        },
       },
   );
 
