@@ -5,6 +5,7 @@ async function getRandomEmoji() {
       {order: [Sequelize.literal('rand()')]});
   const emojiValue = emojiModel.get();
   return {
+    emojiId: emojiValue.id,
     unicode: emojiValue.unicode,
   };
 }
