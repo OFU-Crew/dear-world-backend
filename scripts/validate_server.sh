@@ -2,6 +2,7 @@ echo '======================='
 echo 'Running validate_server'
 echo '======================='
 
+sleep 3
 result=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/)
 
 echo Check http://localhost:3000/
