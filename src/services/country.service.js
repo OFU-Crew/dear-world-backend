@@ -78,19 +78,23 @@ async function getCountryRank() {
           ['messageCount', 'DESC'],
         ],
         limit: 10,
-        include: {
-          model: Country,
-          attributes: [
-            'id',
-            'code',
-            'fullName',
-            'emojiUnicode',
-          ],
-        },
+        include: [
+          {
+            model: Country,
+            as: 'country',
+            attributes: [
+              'id',
+              'code',
+              'fullName',
+              'emojiUnicode',
+            ],
+            required: true,
+          },
+        ],
       },
   );
 
-  return {'countries': countryStatusRank};
+  return {'ranking': countryStatusRank};
 }
 
 module.exports = {
