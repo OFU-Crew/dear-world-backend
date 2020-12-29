@@ -1,15 +1,16 @@
 const {Op} = require('sequelize');
 const moment = require('moment');
+const {MessagePositionOption} = require('../constants');
 const {
   sequelize,
   AnonymousUser,
   Country,
   CountryStatus,
+  Emoji,
   Message,
   LikeHistory,
 } = require('../models');
 
-// TODO: Implement
 async function addMessage(anonymousUserId, content) {
   const messageModel = await Message.create({
     anonymousUserId: anonymousUserId,
@@ -19,6 +20,160 @@ async function addMessage(anonymousUserId, content) {
     throw Error(`Can't create a message`);
   }
   return messageModel;
+}
+
+async function getMessage(ipv4, messageId, countryCode, position) {
+  let messageModel = null;
+  if (position === MessagePositionOption.NEXT) {
+    const nextMessageModel = await Message.findOne({
+      attributes: [
+        'id',
+        'content',
+        'likeCount',
+        'createdAt',
+      ],
+      include: [
+        {
+          model: AnonymousUser,
+          attributes: [
+            'id',
+            'nickname',
+          ],
+          required: true,
+          include: [
+            {
+              model: Country,
+              attributes: [
+                'code',
+                'fullName',
+                'emojiUnicode',
+              ],
+              required: true,
+              where: {
+                code: {
+                  [Op.eq]: countryCode,
+                },
+              },
+            },
+            {
+              model: Emoji,
+              attributes: [
+                'unicode',
+              ],
+              required: true,
+            },
+          ],
+        },
+      ],
+      where: {
+        id: {
+          [Op.gt]: messageId,
+        },
+      },
+    });
+    messageModel = nextMessageModel;
+  } else if (position === MessagePositionOption.PREV) {
+    const prevMessageModel = await Message.findOne({
+      attributes: [
+        'id',
+        'content',
+        'likeCount',
+        'createdAt',
+      ],
+      include: [
+        {
+          model: AnonymousUser,
+          attributes: [
+            'id',
+            'nickname',
+          ],
+          required: true,
+          include: [
+            {
+              model: Country,
+              attributes: [
+                'code',
+                'fullName',
+                'emojiUnicode',
+              ],
+              required: true,
+              where: {
+                code: {
+                  [Op.eq]: countryCode,
+                },
+              },
+            },
+            {
+              model: Emoji,
+              attributes: [
+                'unicode',
+              ],
+              required: true,
+            },
+          ],
+        },
+      ],
+      where: {
+        id: {
+          [Op.lt]: messageId,
+        },
+      },
+      order: [
+        ['id', 'DESC'],
+      ],
+    });
+    messageModel = prevMessageModel;
+  } else {
+    const currMessageModel = await Message.findOne({
+      attributes: [
+        'id',
+        'content',
+        'likeCount',
+        'createdAt',
+      ],
+      include: [
+        {
+          model: AnonymousUser,
+          attributes: [
+            'id',
+            'nickname',
+          ],
+          required: true,
+          include: [
+            {
+              model: Country,
+              attributes: [
+                'code',
+                'fullName',
+                'emojiUnicode',
+              ],
+              required: true,
+            },
+            {
+              model: Emoji,
+              attributes: [
+                'unicode',
+              ],
+              required: true,
+            },
+          ],
+        },
+      ],
+      where: {
+        id: {
+          [Op.eq]: messageId,
+        },
+      },
+    });
+    messageModel = currMessageModel;
+  }
+
+  if (!messageModel) {
+    throw Error(`Can't find a message`);
+  }
+  const messageData = messageModel.get();
+  messageData.like = false; // TODO(sanghee): 아이피 기반으로 좋아요 데이터 읽어서 적용하기
+  return messageData;
 }
 
 async function likeMessage(messageId, ipv4) {
@@ -115,5 +270,6 @@ async function likeMessage(messageId, ipv4) {
 
 module.exports = {
   addMessage,
+  getMessage,
   likeMessage,
 };
