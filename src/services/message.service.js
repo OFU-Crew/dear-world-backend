@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const {Op} = require('sequelize');
 const moment = require('moment');
 const {
@@ -5,11 +6,16 @@ const {
   AnonymousUser,
   Country,
   CountryStatus,
+  Emoji,
   Message,
   LikeHistory,
 } = require('../models');
+const MessagePositionOption = Object.freeze({
+  CURR: 'curr',
+  PREV: 'prev',
+  NEXT: 'next',
+});
 
-// TODO: Implement
 async function addMessage(anonymousUserId, content) {
   const messageModel = await Message.create({
     anonymousUserId: anonymousUserId,
@@ -19,6 +25,87 @@ async function addMessage(anonymousUserId, content) {
     throw Error(`Can't create a message`);
   }
   return messageModel;
+}
+
+async function getMessage(ipv4, messageId, countryCode, position) {
+  const findBaseOption = {
+    attributes: [
+      'id',
+      'content',
+      'likeCount',
+      'createdAt',
+    ],
+    include: [
+      {
+        model: AnonymousUser,
+        attributes: [
+          'id',
+          'nickname',
+        ],
+        required: true,
+        include: [
+          {
+            model: Country,
+            attributes: [
+              'code',
+              'fullName',
+              'emojiUnicode',
+            ],
+            required: true,
+          },
+          {
+            model: Emoji,
+            attributes: [
+              'unicode',
+            ],
+            required: true,
+          },
+        ],
+      },
+    ],
+  };
+  const findCustomOption = {
+    [MessagePositionOption.CURR]: {
+      where: {
+        id: {
+          [Op.eq]: messageId,
+        },
+      },
+    },
+    [MessagePositionOption.PREV]: {
+      where: {
+        id: {
+          [Op.lt]: messageId,
+        },
+      },
+      order: [['id', 'DESC']],
+    },
+    [MessagePositionOption.NEXT]: {
+      where: {
+        id: {
+          [Op.gt]: messageId,
+        },
+      },
+    },
+  };
+
+  const findOption = Object.assign(findBaseOption,
+      findCustomOption[position || MessagePositionOption.CURR]);
+  if ((position === MessagePositionOption.PREV ||
+      position === MessagePositionOption.NEXT) && countryCode) {
+    _.set(findOption, 'include.0.include.0.where', {
+      code: {
+        [Op.eq]: countryCode,
+      },
+    });
+  }
+  const messageModel = await Message.findOne(findOption);
+  if (!messageModel) {
+    throw Error(`Can't find a message`);
+  }
+  const messageData = messageModel.get();
+  messageData.like = false; // TODO(sanghee): 아이피 기반으로 좋아요 데이터 읽어서 적용하기
+  return messageData;
 }
 
 async function likeMessage(messageId, ipv4) {
@@ -120,5 +207,6 @@ async function likeMessage(messageId, ipv4) {
 
 module.exports = {
   addMessage,
+  getMessage,
   likeMessage,
 };
