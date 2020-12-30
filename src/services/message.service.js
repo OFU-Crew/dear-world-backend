@@ -34,34 +34,38 @@ async function likeMessage(messageId, ipv4) {
       'likeCount',
       'createdAt',
     ],
-    include: [
-      {
-        model: AnonymousUser,
+    include: {
+      model: AnonymousUser,
+      as: 'anonymousUser',
+      attributes: [
+        'id',
+        'nickname',
+        'emojiId',
+      ],
+      required: true,
+      include: {
+        model: Country,
+        as: 'country',
         attributes: [
           'id',
-          'nickname',
-          'emojiId',
+          'code',
+          'fullName',
+          'emojiUnicode',
         ],
+        required: true,
         include: {
-          model: Country,
+          model: CountryStatus,
+          as: 'countryStatus',
           attributes: [
             'id',
-            'code',
-            'fullName',
-            'emojiUnicode',
+            'messageCount',
+            'likeCount',
+            'population',
           ],
-          include: {
-            model: CountryStatus,
-            attributes: [
-              'id',
-              'messageCount',
-              'likeCount',
-              'population',
-            ],
-          },
+          required: true,
         },
       },
-    ],
+    },
   });
 
   if (!getMessage) {
@@ -78,7 +82,7 @@ async function likeMessage(messageId, ipv4) {
 
   let like = true;
 
-  const countryStatus = getMessage.AnonymousUser.Country.CountryStatus;
+  const countryStatus = getMessage.anonymousUser.country.countryStatus;
 
   await sequelize.transaction(async (t) => {
     if (existLikeHistory) {
@@ -107,9 +111,10 @@ async function likeMessage(messageId, ipv4) {
       getMessage.likeCount += 1;
       countryStatus.likeCount += 1;
     }
-    await getMessage.save({transaction: t});
-    await countryStatus.save({transaction: t});
+    await getMessage.save({transaction: t, silent: true});
+    await countryStatus.save({transaction: t, silent: true});
   });
+
   return {like: like, data: getMessage};
 }
 
