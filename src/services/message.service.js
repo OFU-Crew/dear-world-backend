@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const {Op} = require('sequelize');
 const moment = require('moment');
 const {
@@ -27,151 +28,78 @@ async function addMessage(anonymousUserId, content) {
 }
 
 async function getMessage(ipv4, messageId, countryCode, position) {
-  let messageModel = null;
-  if (position === MessagePositionOption.NEXT) {
-    const nextMessageModel = await Message.findOne({
-      attributes: [
-        'id',
-        'content',
-        'likeCount',
-        'createdAt',
-      ],
-      include: [
-        {
-          model: AnonymousUser,
-          attributes: [
-            'id',
-            'nickname',
-          ],
-          required: true,
-          include: [
-            {
-              model: Country,
-              attributes: [
-                'code',
-                'fullName',
-                'emojiUnicode',
-              ],
-              required: true,
-              where: {
-                code: {
-                  [Op.eq]: countryCode,
-                },
-              },
-            },
-            {
-              model: Emoji,
-              attributes: [
-                'unicode',
-              ],
-              required: true,
-            },
-          ],
-        },
-      ],
-      where: {
-        id: {
-          [Op.gt]: messageId,
-        },
+  const findBaseOption = {
+    attributes: [
+      'id',
+      'content',
+      'likeCount',
+      'createdAt',
+    ],
+    include: [
+      {
+        model: AnonymousUser,
+        attributes: [
+          'id',
+          'nickname',
+        ],
+        required: true,
+        include: [
+          {
+            model: Country,
+            attributes: [
+              'code',
+              'fullName',
+              'emojiUnicode',
+            ],
+            required: true,
+          },
+          {
+            model: Emoji,
+            attributes: [
+              'unicode',
+            ],
+            required: true,
+          },
+        ],
       },
-    });
-    messageModel = nextMessageModel;
-  } else if (position === MessagePositionOption.PREV) {
-    const prevMessageModel = await Message.findOne({
-      attributes: [
-        'id',
-        'content',
-        'likeCount',
-        'createdAt',
-      ],
-      include: [
-        {
-          model: AnonymousUser,
-          attributes: [
-            'id',
-            'nickname',
-          ],
-          required: true,
-          include: [
-            {
-              model: Country,
-              attributes: [
-                'code',
-                'fullName',
-                'emojiUnicode',
-              ],
-              required: true,
-              where: {
-                code: {
-                  [Op.eq]: countryCode,
-                },
-              },
-            },
-            {
-              model: Emoji,
-              attributes: [
-                'unicode',
-              ],
-              required: true,
-            },
-          ],
-        },
-      ],
-      where: {
-        id: {
-          [Op.lt]: messageId,
-        },
-      },
-      order: [
-        ['id', 'DESC'],
-      ],
-    });
-    messageModel = prevMessageModel;
-  } else {
-    const currMessageModel = await Message.findOne({
-      attributes: [
-        'id',
-        'content',
-        'likeCount',
-        'createdAt',
-      ],
-      include: [
-        {
-          model: AnonymousUser,
-          attributes: [
-            'id',
-            'nickname',
-          ],
-          required: true,
-          include: [
-            {
-              model: Country,
-              attributes: [
-                'code',
-                'fullName',
-                'emojiUnicode',
-              ],
-              required: true,
-            },
-            {
-              model: Emoji,
-              attributes: [
-                'unicode',
-              ],
-              required: true,
-            },
-          ],
-        },
-      ],
+    ],
+  };
+  const findCustomOption = {
+    [MessagePositionOption.CURR]: {
       where: {
         id: {
           [Op.eq]: messageId,
         },
       },
-    });
-    messageModel = currMessageModel;
-  }
+    },
+    [MessagePositionOption.PREV]: {
+      where: {
+        id: {
+          [Op.lt]: messageId,
+        },
+      },
+      order: [['id', 'DESC']],
+    },
+    [MessagePositionOption.NEXT]: {
+      where: {
+        id: {
+          [Op.gt]: messageId,
+        },
+      },
+    },
+  };
 
+  const findOption = Object.assign(findBaseOption,
+      findCustomOption[position || MessagePositionOption.CURR]);
+  if ((position === MessagePositionOption.PREV ||
+      position === MessagePositionOption.NEXT) && countryCode) {
+    _.set(findOption, 'include.0.include.0.where', {
+      code: {
+        [Op.eq]: countryCode,
+      },
+    });
+  }
+  const messageModel = await Message.findOne(findOption);
   if (!messageModel) {
     throw Error(`Can't find a message`);
   }
