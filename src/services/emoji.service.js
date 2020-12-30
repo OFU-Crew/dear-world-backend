@@ -15,7 +15,6 @@ async function getRandomEmoji() {
 
 async function addEmoji(unicode) {
   const result = await Emoji.create({unicode: unicode});
-  console.log(unicode);
   return result;
 }
 
