@@ -5,6 +5,7 @@ module.exports = (sequelize) => {
     static associate(models) {
       this.belongsTo(models.AnonymousUser, {
         foreignKey: 'anonymousUserId',
+        as: 'anonymousUser',
       });
     }
   };

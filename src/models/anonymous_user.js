@@ -5,14 +5,17 @@ module.exports = (sequelize) => {
     static associate(models) {
       this.belongsTo(models.Country, {
         foreignKey: 'countryId',
+        as: 'country',
       });
 
       this.belongsTo(models.Emoji, {
         foreignKey: 'emojiId',
+        as: 'emoji',
       });
 
       this.hasOne(models.Message, {
         foreignKey: 'anonymousUserId',
+        as: 'message',
       });
     }
   }

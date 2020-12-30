@@ -5,6 +5,7 @@ module.exports = (sequelize) => {
     static associate(models) {
       this.hasOne(models.CountryStatus, {
         foreignKey: 'countryId',
+        as: 'countryStatus',
       });
     }
   };

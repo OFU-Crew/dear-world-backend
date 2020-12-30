@@ -5,6 +5,7 @@ module.exports = (sequelize) => {
     static associate(models) {
       this.belongsTo(models.Message, {
         foreignKey: 'messageId',
+        as: 'message',
       });
     }
   };
@@ -22,7 +23,7 @@ module.exports = (sequelize) => {
     },
   }, {
     sequelize,
-    tableName: 'like_historyies',
+    tableName: 'like_histories',
     charset: 'utf8mb4',
     collate: 'utf8mb4_bin',
     timestamps: true,

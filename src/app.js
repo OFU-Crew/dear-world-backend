@@ -20,6 +20,11 @@ const morgan = require('./middlewares/morgan');
 const limiter = require('./middlewares/express_rate_limit');
 const db = require('./models');
 const cors = require('cors');
+const {
+  scriptCountry,
+  scriptCountryStatus,
+  scriptEmoji,
+} = require('./scripts');
 
 app.use(morgan);
 app.use(cors());
@@ -34,20 +39,25 @@ app.use((err, req, res, next) => {
   res.status(500).send('Internal server error');
 });
 
-app.listen(PORT, () => {
-  console.log(`Listening at ${PORT}`);
-});
-
 
 const syncOptions = {};
-if (process.env.NODE_ENV === 'develop') {
-  syncOptions.alter = true;
-} else if (process.env.NODE_ENV === 'test') {
+if (process.env.NODE_ENV === 'test') {
   syncOptions.force = true;
 }
 
-db.sequelize.sync(syncOptions).catch((err) => {
-  console.error(err);
-  process.exit();
-});
+db.sequelize.sync(syncOptions)
+    .then(async () => {
+      if (process.env.NODE_ENV === 'test') {
+        await scriptCountry();
+        await scriptCountryStatus();
+        await scriptEmoji();
+      }
 
+      app.listen(PORT, () => {
+        console.log(`Listening at ${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      process.exit();
+    });
