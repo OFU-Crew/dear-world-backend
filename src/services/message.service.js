@@ -1,6 +1,5 @@
 const {Op} = require('sequelize');
 const moment = require('moment');
-const {MessagePositionOption} = require('../constants');
 const {
   sequelize,
   AnonymousUser,
@@ -10,6 +9,11 @@ const {
   Message,
   LikeHistory,
 } = require('../models');
+const MessagePositionOption = Object.freeze({
+  CURR: 'curr',
+  PREV: 'prev',
+  NEXT: 'next',
+});
 
 async function addMessage(anonymousUserId, content) {
   const messageModel = await Message.create({
