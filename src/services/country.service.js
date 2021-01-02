@@ -68,38 +68,81 @@ async function getCountryStatus(countryId) {
   return countryStatusModel;
 }
 
-async function getCountryRank() {
-  const countryStatusRank = await CountryStatus.findAll(
+async function getCountriesCount() {
+  const countriesCount = await Country.findAll(
       {
         attributes: [
-          'messageCount',
-          'likeCount',
-          'population',
-          [Sequelize.literal(
-              `CASE 
-                WHEN message_count DIV 100 < 5 
-                  THEN message_count DIV 100
-                ELSE 5
-              END`,
-          ), 'level'],
+          'id',
+          'code',
+          'fullName',
+          'emojiUnicode',
         ],
-        order: [
-          ['messageCount', 'DESC'],
-        ],
-        limit: 10,
         include: [
           {
-            model: Country,
-            as: 'country',
+            model: CountryStatus,
+            as: 'countryStatus',
+            required: true,
             attributes: [
               'id',
-              'code',
-              'fullName',
-              'emojiUnicode',
+              'messageCount',
+              'likeCount',
+              [Sequelize.literal(
+                  `CAST(CASE 
+                WHEN message_count DIV 100 < 5
+                  THEN message_count DIV 100
+                ELSE 5
+              END AS UNSIGNED)`,
+              ), 'level'],
+              'population',
             ],
-            required: true,
           },
         ],
+      },
+  );
+
+  return {'countries': countriesCount};
+}
+
+async function getCountryRank() {
+  const countryStatusRank = await Country.findAll(
+      {
+        attributes: [
+          'id',
+          'code',
+          'fullName',
+          'emojiUnicode',
+        ],
+        include: [
+          {
+            model: CountryStatus,
+            as: 'countryStatus',
+            required: true,
+            attributes: [
+              'id',
+              'messageCount',
+              'likeCount',
+              [Sequelize.literal(
+                  `CAST(CASE 
+              WHEN message_count DIV 100 < 5
+                THEN message_count DIV 100
+              ELSE 5
+            END AS UNSIGNED)`,
+              ), 'level'],
+              'population',
+            ],
+          },
+        ],
+        order: [
+          [
+            {
+              model: CountryStatus,
+              as: 'countryStatus',
+            },
+            'messageCount',
+            'DESC',
+          ],
+        ],
+        limit: 10,
       },
   );
 
@@ -112,5 +155,6 @@ module.exports = {
   getCountryId,
   addCountryStatus,
   getCountryStatus,
+  getCountriesCount,
   getCountryRank,
 };
