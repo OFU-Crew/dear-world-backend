@@ -1,8 +1,6 @@
 const messageService = require('../services/message.service');
 const multipleService = require('../services/multiple.service');
 const {Success, Failure} = require('../utils/response');
-const faker = require('faker');
-const {flag, name} = require('country-emoji');
 
 // TODO: Implement addMessage
 async function addMessage(req, res, next) {
@@ -51,15 +49,20 @@ async function getMessage(req, res, next) {
   }
 }
 
-function getMessages(req, res, next) {
+async function getMessages(req, res, next) {
   const {
-    countryId,
-    offset,
+    countryCode,
+    type,
+    lastId,
   } = req.query;
 
-  if (countryId === undefined || offset === undefined) {
-    res.status(200).json(Failure('Invalid request parameters'));
-    return;
+  const ipv4 = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  try {
+    const result = await messageService.getMessages(ipv4, countryCode, type,
+        lastId);
+    res.status(200).json(Success(result));
+  } catch (err) {
+    res.status(200).json(Failure(err.message));
   }
 
   const mockMessages = [];
