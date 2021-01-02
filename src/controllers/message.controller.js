@@ -2,6 +2,7 @@ const _ = require('lodash');
 const messageService = require('../services/message.service');
 const multipleService = require('../services/multiple.service');
 const {Success, Failure} = require('../utils/response');
+const {redisDefault, getAsyncReadonly} = require('../redis');
 
 // TODO: Implement addMessage
 async function addMessage(req, res, next) {
@@ -36,14 +37,30 @@ async function getMessage(req, res, next) {
     countryCode,
     position,
   } = req.query;
+  const getMessageKey = `message-${messageId}`;
+
   const ipv4 = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   try {
+    const reply = await getAsyncReadonly(getMessageKey);
+
+    if (reply !== null) {
+      res.status(200).json(Success(JSON.parse(reply)));
+      return;
+    }
+
     const result = await messageService.getMessage(
         ipv4,
         messageId,
         _.upperCase(countryCode),
         position,
     );
+
+    redisDefault.set(getMessageKey, JSON.stringify(result));
+    redisDefault.expire(
+        getMessageKey,
+        5,
+    );
+
     res.status(200).json(Success(result));
   } catch (err) {
     res.status(200).json(Failure(err.message));
@@ -56,11 +73,30 @@ async function getMessages(req, res, next) {
     type,
     lastId,
   } = req.query;
+  const getMessagesKey = `message-${countryCode ||
+    'whole-world'}-${type ||
+       'recent'}-${lastId ||
+         'initial'}`;
+  console.log(getMessagesKey);
 
   const ipv4 = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   try {
+    const reply = await getAsyncReadonly(getMessagesKey);
+
+    if (reply !== null) {
+      res.status(200).json(Success(JSON.parse(reply)));
+      return;
+    }
+
     const result = await messageService.getMessages(ipv4,
         _.upperCase(countryCode), type, lastId);
+
+    redisDefault.set(getMessagesKey, JSON.stringify(result));
+    redisDefault.expire(
+        getMessagesKey,
+        5,
+    );
+
     res.status(200).json(Success(result));
   } catch (err) {
     res.status(200).json(Failure(err.message));

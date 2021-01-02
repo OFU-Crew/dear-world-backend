@@ -140,7 +140,7 @@ async function getMessages(ipv4, countryCode, type, prevLastId) {
     }
   } else if (type === MessageTypeOption.WEEKLY_HOT) {
     _.set(findOption, 'where.createdAt', {
-      [Op.gte]: moment().subtract(7, 'days').toDate(),
+      [Op.gte]: moment.utc().subtract(7, 'days').toDate(),
     });
     _.set(findOption, 'where.likeCount', {
       [Op.gt]: 0,
