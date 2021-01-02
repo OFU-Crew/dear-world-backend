@@ -29,6 +29,24 @@ async function addMessage(req, res, next) {
   }
 }
 
+async function getMessage(req, res, next) {
+  const {
+    messageId,
+  } = req.params;
+  const {
+    countryCode,
+    position,
+  } = req.query;
+  const ipv4 = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  try {
+    const result = await messageService.getMessage(ipv4, messageId, countryCode,
+        position);
+    res.status(200).json(Success(result));
+  } catch (err) {
+    res.status(200).json(Failure(err.message));
+  }
+}
+
 function getMessages(req, res, next) {
   const {
     countryId,
@@ -122,6 +140,7 @@ async function postLikeMessage(req, res, next) {
 
 module.exports = {
   addMessage,
+  getMessage,
   getMessages,
   postLikeMessage,
 };
