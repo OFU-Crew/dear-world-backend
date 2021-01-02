@@ -154,6 +154,10 @@ async function getCountryStatusMessageCount(type, countryCode) {
   type = type || 'all';
   countryCode = countryCode || null;
 
+  if (countryCode !== null) {
+    countryCode = countryCode.toUpperCase();
+  }
+
   if (type !== 'all' && type !== 'country') {
     throw Error(`Invalid type parameter`);
   }

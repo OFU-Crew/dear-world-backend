@@ -44,7 +44,7 @@ async function getCountryStatusMessageCount(req, res, next) {
   try {
     const messageCount = await countryService.getCountryStatusMessageCount(
         type,
-        countryCode.toUpperCase(),
+        countryCode,
     );
     res.status(200).json(Success(messageCount));
   } catch (error) {
