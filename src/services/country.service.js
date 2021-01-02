@@ -6,7 +6,16 @@ async function addCountry(code, fullName, emojiUnicode) {
 }
 
 async function getCountries() {
-  const countries = await Country.findAll();
+  const countries = await Country.findAll(
+      {
+        attributes: [
+          'id',
+          'code',
+          'fullName',
+          'emojiUnicode',
+        ],
+      },
+  );
   return countries;
 }
 
