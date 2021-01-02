@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const {Op} = require('sequelize');
+const clone = require('clone');
 const moment = require('moment');
 const {
   sequelize,
@@ -10,11 +11,56 @@ const {
   Message,
   LikeHistory,
 } = require('../models');
+const RECENT_MESSAGE_THRESHOLD = 30;
+const WEEKLY_HOT_MESSAGE_THRESHOLD = 100;
 const MessagePositionOption = Object.freeze({
   CURR: 'curr',
   PREV: 'prev',
   NEXT: 'next',
 });
+const MessageTypeOption = Object.freeze({
+  RECENT: 'recent',
+  WEEKLY_HOT: 'weekly_hot',
+});
+const findMessageBaseOption = {
+  attributes: [
+    'id',
+    'content',
+    'likeCount',
+    'createdAt',
+  ],
+  include: [
+    {
+      model: AnonymousUser,
+      as: 'anonymousUser',
+      attributes: [
+        'id',
+        'nickname',
+      ],
+      required: true,
+      include: [
+        {
+          model: Country,
+          as: 'country',
+          attributes: [
+            'code',
+            'fullName',
+            'emojiUnicode',
+          ],
+          required: true,
+        },
+        {
+          model: Emoji,
+          as: 'emoji',
+          attributes: [
+            'unicode',
+          ],
+          required: true,
+        },
+      ],
+    },
+  ],
+};
 
 async function addMessage(anonymousUserId, content) {
   const messageModel = await Message.create({
@@ -27,46 +73,61 @@ async function addMessage(anonymousUserId, content) {
   return messageModel;
 }
 
-async function getMessage(ipv4, messageId, countryCode, position) {
-  const findBaseOption = {
-    attributes: [
-      'id',
-      'content',
-      'likeCount',
-      'createdAt',
-    ],
-    include: [
-      {
-        model: AnonymousUser,
-        as: 'anonymousUser',
-        attributes: [
-          'id',
-          'nickname',
-        ],
-        required: true,
-        include: [
-          {
-            model: Country,
-            as: 'country',
-            attributes: [
-              'code',
-              'fullName',
-              'emojiUnicode',
-            ],
-            required: true,
-          },
-          {
-            model: Emoji,
-            as: 'emoji',
-            attributes: [
-              'unicode',
-            ],
-            required: true,
-          },
-        ],
+async function getMessages(ipv4, countryCode, type, prevLastId) {
+  const findOption = clone(findMessageBaseOption);
+
+  if (countryCode) {
+    _.set(findOption, 'include.0.include.0.where', {
+      code: {
+        [Op.eq]: countryCode,
       },
-    ],
+    });
+  }
+
+  if (!type || type === MessageTypeOption.RECENT) {
+    findOption.limit = RECENT_MESSAGE_THRESHOLD;
+    findOption.order = [
+      ['id', 'DESC'],
+    ];
+    if (prevLastId) {
+      _.set(findOption, 'where.id', {
+        [Op.lt]: prevLastId,
+      });
+    }
+  } else if (type === MessageTypeOption.WEEKLY_HOT) {
+    _.set(findOption, 'where.createdAt', {
+      [Op.gte]: moment().subtract(7, 'days').toDate(),
+    });
+    _.set(findOption, 'where.likeCount', {
+      [Op.gt]: 0,
+    });
+    findOption.limit = WEEKLY_HOT_MESSAGE_THRESHOLD;
+    findOption.order = [
+      ['likeCount', 'DESC'],
+    ];
+  } else {
+    throw Error(`Invalid messageTypeOption (${type})`);
+  }
+
+  const messageModels = await Message.findAll(findOption);
+  const messageCount = _.get(messageModels, 'length', 0);
+  const firstId = !messageCount ? null : messageModels[0].get('id');
+  const lastId = !messageCount ? null :
+      messageModels[messageModels.length - 1].get('id');
+  const messages = !messageCount ? [] : messageModels.map((model) => {
+    const data = model.get();
+    data.like = false; // TODO: 좋아요 데이터 긁어서 넣기
+    return data;
+  });
+  return {
+    firstId,
+    lastId,
+    messageCount,
+    messages,
   };
+}
+
+async function getMessage(ipv4, messageId, countryCode, position) {
   const findCustomOption = {
     [MessagePositionOption.CURR]: {
       where: {
@@ -92,7 +153,8 @@ async function getMessage(ipv4, messageId, countryCode, position) {
     },
   };
 
-  const findOption = Object.assign(findBaseOption,
+  const findOption = clone(findMessageBaseOption);
+  Object.assign(findOption,
       findCustomOption[position || MessagePositionOption.CURR]);
   if ((position === MessagePositionOption.PREV ||
       position === MessagePositionOption.NEXT) && countryCode) {
@@ -211,5 +273,6 @@ async function likeMessage(messageId, ipv4) {
 module.exports = {
   addMessage,
   getMessage,
+  getMessages,
   likeMessage,
 };
