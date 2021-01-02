@@ -1,3 +1,4 @@
+const {Op} = require('sequelize');
 const {Country, CountryStatus, Sequelize} = require('../models');
 
 async function addCountry(code, fullName, emojiUnicode) {
@@ -149,6 +150,61 @@ async function getCountryRank() {
   return {'ranking': countryStatusRank};
 }
 
+async function getCountryStatusMessageCount(type, countryCode) {
+  type = type || 'all';
+  countryCode = countryCode || null;
+
+  if (type !== 'all' && type !== 'country') {
+    throw Error(`Invalid type parameter`);
+  }
+
+  if (type === 'country' && countryCode === null) {
+    throw Error(`Invalid countryCode parameter`);
+  }
+
+  if (type === 'all') {
+    const allMessageCount = await CountryStatus.findAll(
+        {
+          attributes: [
+            [
+              Sequelize.fn(
+                  'max',
+                  Sequelize.col('message_count'),
+              ),
+              'sumMessageCount',
+            ],
+          ],
+          raw: true,
+        },
+    );
+
+    return {'type': 'all', 'count': allMessageCount[0].sumMessageCount};
+  } else if (type === 'country') {
+    const countryMessageCount = await CountryStatus.findOne({
+      attributes: [
+        'messageCount',
+      ],
+      include: {
+        model: Country,
+        as: 'country',
+        attributes: [
+          'id',
+          'code',
+          'fullName',
+          'emojiUnicode',
+        ],
+        where: {
+          code: {
+            [Op.eq]: countryCode,
+          },
+        },
+      },
+    });
+
+    return {'type': 'country', 'count': countryMessageCount.messageCount};
+  }
+}
+
 module.exports = {
   addCountry,
   getCountries,
@@ -157,4 +213,5 @@ module.exports = {
   getCountryStatus,
   getCountriesCount,
   getCountryRank,
+  getCountryStatusMessageCount,
 };

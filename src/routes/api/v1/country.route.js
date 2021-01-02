@@ -5,6 +5,6 @@ const countryController = require('../../../controllers/country.controller');
 router.get('/', countryController.getCountries);
 router.get('/:countryId/status', countryController.getCountryStatus);
 router.get('/rank', countryController.getCountryRank);
-router.get('/count', countryController.getCountriesCount);
+router.get('/messagecount', countryController.getCountryStatusMessageCount);
 
 module.exports = router;
