@@ -20,6 +20,15 @@ async function getCountryStatus(req, res, next) {
   }
 }
 
+async function getCountriesCount(req, res, next) {
+  try {
+    const countriesCount = await countryService.getCountriesCount();
+    res.status(200).json(Success(countriesCount));
+  } catch (err) {
+    res.status(200).json(Failure(err.message));
+  }
+}
+
 async function getCountryRank(req, res, next) {
   try {
     const countryRank = await countryService.getCountryRank();
@@ -32,5 +41,6 @@ async function getCountryRank(req, res, next) {
 module.exports = {
   getCountries,
   getCountryStatus,
+  getCountriesCount,
   getCountryRank,
 };
