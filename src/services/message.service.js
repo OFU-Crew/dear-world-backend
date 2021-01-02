@@ -176,11 +176,11 @@ async function likeMessage(messageId, ipv4) {
 
   await sequelize.transaction(async (t) => {
     if (existLikeHistory) {
-      if (getMessage.likeCount == 0) {
+      if (getMessage.likeCount === 0) {
         throw Error('The message like cannot decrease');
       }
 
-      if (countryStatus.likeCount == 0) {
+      if (countryStatus.likeCount === 0) {
         throw Error('The country status like cannot decrease');
       }
 
