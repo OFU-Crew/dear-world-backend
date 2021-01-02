@@ -20,7 +20,7 @@ async function addMessage(req, res, next) {
 
   try {
     const result = await multipleService.addAnonymousUserAndMessage(
-        content, countryCode, emojiId, nickname,
+        content, countryCode.toUpperCase(), emojiId, nickname,
     );
 
     res.status(200).json(Success(result));
@@ -39,8 +39,12 @@ async function getMessage(req, res, next) {
   } = req.query;
   const ipv4 = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   try {
-    const result = await messageService.getMessage(ipv4, messageId, countryCode,
-        position);
+    const result = await messageService.getMessage(
+        ipv4,
+        messageId,
+        countryCode.toUpperCase(),
+        position,
+    );
     res.status(200).json(Success(result));
   } catch (err) {
     res.status(200).json(Failure(err.message));
@@ -90,7 +94,7 @@ function getMessages(req, res, next) {
       'anonymousUser': {
         'id': i,
         'country': {
-          'shortName': countryCode,
+          'shortName': countryCode.toUpperCase(),
           'fullName': countryFullName,
           'image': countryImage,
         },
