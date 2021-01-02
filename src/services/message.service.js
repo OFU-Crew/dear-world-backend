@@ -38,6 +38,7 @@ async function getMessage(ipv4, messageId, countryCode, position) {
     include: [
       {
         model: AnonymousUser,
+        as: 'anonymousUser',
         attributes: [
           'id',
           'nickname',
@@ -46,6 +47,7 @@ async function getMessage(ipv4, messageId, countryCode, position) {
         include: [
           {
             model: Country,
+            as: 'country',
             attributes: [
               'code',
               'fullName',
@@ -55,6 +57,7 @@ async function getMessage(ipv4, messageId, countryCode, position) {
           },
           {
             model: Emoji,
+            as: 'emoji',
             attributes: [
               'unicode',
             ],
