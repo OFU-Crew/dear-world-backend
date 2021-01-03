@@ -6,5 +6,6 @@ router.post('/', messageController.addMessage);
 router.get('/:messageId', messageController.getMessage);
 router.get('/', messageController.getMessages);
 router.post('/:messageId/like', messageController.postLikeMessage);
+router.get('/:messageId/share-link', messageController.getShareLink);
 
 module.exports = router;
