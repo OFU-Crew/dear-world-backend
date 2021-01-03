@@ -39,11 +39,10 @@ async function getCountryRank(req, res, next) {
 }
 
 async function getCountryStatusMessageCount(req, res, next) {
-  const {type, countryCode} = req.query;
+  const {countryCode} = req.query;
 
   try {
     const messageCount = await countryService.getCountryStatusMessageCount(
-        type,
         countryCode,
     );
     res.status(200).json(Success(messageCount));
