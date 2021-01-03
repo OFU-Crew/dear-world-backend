@@ -148,14 +148,28 @@ async function getMessages(ipv4, countryCode, type, prevLastId) {
     throw Error(`Invalid messageTypeOption (${type})`);
   }
 
-  const messageModels = await Message.findAll(findOption);
-  const messageCount = _.get(messageModels, 'length', 0);
-  const firstId = !messageCount ? null : messageModels[0].get('id');
-  const lastId = !messageCount ? null :
-      messageModels[messageModels.length - 1].get('id');
-  const messages = !messageCount ? [] : messageModels.map((model) => {
+  const messageModels = await Message.findAll(findOption) || [];
+  const messageCount = messageModels.length;
+  const firstId = messageModels.length > 0 ? messageModels[0].get('id') : null;
+  const lastId = messageModels.length > 0 ?
+      messageModels[messageModels.length - 1].get('id') : null;
+  const messageIdList = messageModels.map((model) => model.get('id'));
+  const likedMessageModelList = await LikeHistory.findAll({
+    where: {
+      ipv4: {
+        [Op.eq]: ipv4,
+      },
+      createdAt: {
+        [Op.gte]: moment().subtract(1, 'days').toDate(),
+      },
+      messageId: messageIdList,
+    },
+  }) || [];
+  const likedMessageIdList = likedMessageModelList.map(
+      (model) => model.get('messageId'));
+  const messages = messageModels.map((model) => {
     const data = model.get();
-    data.like = false; // TODO: 좋아요 데이터 긁어서 넣기
+    data.like = likedMessageIdList.includes(data.id);
     return data;
   });
   return {
@@ -208,7 +222,20 @@ async function getMessage(ipv4, messageId, countryCode, position) {
     throw Error(`Can't find a message`);
   }
   const messageData = messageModel.get();
-  messageData.like = false; // TODO(sanghee): 아이피 기반으로 좋아요 데이터 읽어서 적용하기
+  const existLikeHistory = await LikeHistory.findOne({
+    where: {
+      messageId: {
+        [Op.eq]: messageId,
+      },
+      ipv4: {
+        [Op.eq]: ipv4,
+      },
+      createdAt: {
+        [Op.gte]: moment().subtract(1, 'days').toDate(),
+      },
+    },
+  });
+  messageData.like = !!existLikeHistory;
   return messageData;
 }
 
@@ -264,18 +291,14 @@ async function likeMessage(messageId, ipv4) {
   }
 
   const existLikeHistory = await LikeHistory.findOne({
-    where: [
-      {
-        message_id: {
-          [Op.eq]: messageId,
-        },
+    where: {
+      messageId: {
+        [Op.eq]: messageId,
       },
-      {
-        created_at: {
-          [Op.gte]: moment().subtract(1, 'days').toDate(),
-        },
+      createdAt: {
+        [Op.gte]: moment().subtract(1, 'days').toDate(),
       },
-    ],
+    },
   });
 
   let like = true;
