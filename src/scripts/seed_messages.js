@@ -30,7 +30,7 @@ async function main() {
     });
     const allEmojies = await Emoji.findAll({});
 
-    for (let i = 0; i < 10; ++i) {
+    for (let i = 0; i < 10000; ++i) {
       let content = faker.lorem.paragraphs(1);
 
       while (content.length > 300) {
