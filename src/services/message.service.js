@@ -343,12 +343,12 @@ async function likeMessage(messageId, ipv4) {
     await countryStatus.save({transaction: t, silent: true});
   });
 
+  const messageData = getMessage.get();
+  messageData.like = like;
+  addShareLinkToMessage(messageData, getMessage.id);
   return {
     like: like,
-    data: _.omit(
-        getMessage.toJSON(),
-        ['anonymousUser.country.countryStatus'],
-    ),
+    data: messageData,
   };
 }
 
