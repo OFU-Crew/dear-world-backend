@@ -2,12 +2,12 @@ const path = require('path');
 const dotenv = require('dotenv');
 
 if (process.env.NODE_ENV === 'production') {
-  dotenv.config({path: path.join(__dirname, '../.env.production')});
+  dotenv.config({path: path.join(__dirname, '../../.env.production')});
 } else if (process.env.NODE_ENV === 'test') {
-  dotenv.config({path: path.join(__dirname, '../.env.test')});
+  dotenv.config({path: path.join(__dirname, '../../.env.test')});
 } else if (process.env.NODE_ENV === 'develop' ||
               process.env.NODE_ENV === undefined) {
-  dotenv.config({path: path.join(__dirname, '../.env.develop')});
+  dotenv.config({path: path.join(__dirname, '../../.env.develop')});
 } else {
   throw new Error('process.env.NODE_ENV를 올바르게 설정해주세요!');
 }
@@ -38,9 +38,9 @@ async function main() {
       }
 
       const randomCountry = allCountries[
-          Math.floor(Math.random() * allCountries.length) + 1
+          Math.floor(Math.random() * allCountries.length)
       ];
-      const randomEmojId = Math.floor(Math.random() * allEmojies.length) + 1;
+      const randomEmojId = Math.floor(Math.random() * allEmojies.length);
 
       let name = faker.name.firstName() + faker.name.lastName();
       const randNum = Math.floor(Math.random() * 20);
@@ -69,12 +69,12 @@ async function main() {
       }
 
       message.likeCount = randomLikeCount;
-      message.save();
+      await message.save();
 
       randomCountry.countryStatus.likeCount += randomLikeCount;
       randomCountry.countryStatus.messageCount += 1;
 
-      randomCountry.countryStatus.save();
+      await randomCountry.countryStatus.save();
     }
   } catch (error) {
     console.error(error);
