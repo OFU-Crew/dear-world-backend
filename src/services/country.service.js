@@ -1,4 +1,5 @@
 const {Op} = require('sequelize');
+const _ = require('lodash');
 const {Country, CountryStatus, Sequelize} = require('../models');
 
 async function addCountry(code, fullName, emojiUnicode) {
@@ -49,24 +50,35 @@ async function addCountryStatus(countryId, allowDuplicate = false) {
   return result;
 }
 
-async function getCountryStatus(countryId) {
-  const countryStatusModel = await CountryStatus.findOne(
-      {
-        where: {
-          countryId: countryId,
+async function getCountryStatus(countryCode) {
+  const getCountryStatus = await CountryStatus.findOne({
+    attributes: [
+      'id',
+      'messageCount',
+      'likeCount',
+    ],
+    include: {
+      model: Country,
+      as: 'country',
+      attributes: [
+        'id',
+        'code',
+        'fullName',
+        'emojiUnicode',
+      ],
+      where: {
+        code: {
+          [Op.eq]: countryCode,
         },
-        attributes: [
-          'id',
-          'messageCount',
-          'likeCount',
-        ],
       },
-  );
-  if (!countryStatusModel) {
-    throw Error(`Can't find country by id (${countryId})`);
+    },
+  });
+
+  if (!getCountryStatus) {
+    throw Error(`Can't find country by code (${countryCode})`);
   }
 
-  return countryStatusModel;
+  return _.omit(getCountryStatus.toJSON(), ['country']);
 }
 
 async function getCountriesCount() {
