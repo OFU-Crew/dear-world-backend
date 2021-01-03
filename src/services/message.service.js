@@ -13,6 +13,7 @@ const {
 } = require('../models');
 const RECENT_MESSAGE_THRESHOLD = 30;
 const WEEKLY_HOT_MESSAGE_THRESHOLD = 100;
+const ENDPOINT_URL = 'https://dear-world.live';
 const MessagePositionOption = Object.freeze({
   CURR: 'curr',
   PREV: 'prev',
@@ -345,9 +346,14 @@ async function likeMessage(messageId, ipv4) {
   };
 }
 
+function getShareLink(messageId) {
+  return `${ENDPOINT_URL}/messages/${messageId}`;
+}
+
 module.exports = {
   addMessage,
   getMessage,
   getMessages,
   likeMessage,
+  getShareLink,
 };
