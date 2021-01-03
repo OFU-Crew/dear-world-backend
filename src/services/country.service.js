@@ -150,23 +150,14 @@ async function getCountryRank() {
   return {'ranking': countryStatusRank};
 }
 
-async function getCountryStatusMessageCount(type, countryCode) {
-  type = type || 'all';
+async function getCountryStatusMessageCount(countryCode) {
   countryCode = countryCode || null;
 
   if (countryCode !== null) {
     countryCode = countryCode.toUpperCase();
   }
 
-  if (type !== 'all' && type !== 'country') {
-    throw Error(`Invalid type parameter`);
-  }
-
-  if (type === 'country' && countryCode === null) {
-    throw Error(`Invalid countryCode parameter`);
-  }
-
-  if (type === 'all') {
+  if (countryCode === null) {
     const allMessageCount = await CountryStatus.findAll(
         {
           attributes: [
@@ -182,8 +173,11 @@ async function getCountryStatusMessageCount(type, countryCode) {
         },
     );
 
-    return {'type': 'all', 'count': allMessageCount[0].sumMessageCount};
-  } else if (type === 'country') {
+    return {
+      'country': 'all',
+      'messageCount': allMessageCount[0].sumMessageCount,
+    };
+  } else {
     const countryMessageCount = await CountryStatus.findOne({
       attributes: [
         'messageCount',
@@ -205,7 +199,10 @@ async function getCountryStatusMessageCount(type, countryCode) {
       },
     });
 
-    return {'type': 'country', 'count': countryMessageCount.messageCount};
+    return {
+      'country': countryCode,
+      'messageCount': countryMessageCount.messageCount,
+    };
   }
 }
 
