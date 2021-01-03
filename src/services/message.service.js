@@ -63,14 +63,53 @@ const findMessageBaseOption = {
 };
 
 async function addMessage(anonymousUserId, content) {
-  const messageModel = await Message.create({
-    anonymousUserId: anonymousUserId,
-    content: content,
+  let createdMessage = {};
+
+  await sequelize.transaction(async (t) => {
+    createdMessage = await Message.create({
+      anonymousUserId: anonymousUserId,
+      content: content,
+    }, {
+      transaction: t,
+    });
+
+    if (!createdMessage) {
+      throw Error(`Can't create a message`);
+    }
+
+    const getAnoynymousUser = await AnonymousUser.findOne({
+      attributes: [
+        'id',
+        'nickname',
+      ],
+      where: {
+        'id': {
+          [Op.eq]: anonymousUserId,
+        },
+      },
+      include: [
+        {
+          model: Country,
+          as: 'country',
+          required: true,
+          include: [
+            {
+              model: CountryStatus,
+              as: 'countryStatus',
+              required: true,
+            },
+          ],
+        },
+      ],
+    });
+
+    const getCountryStatus = getAnoynymousUser.country.countryStatus;
+    getCountryStatus.messageCount += 1;
+
+    await getCountryStatus.save({transaction: t, silent: true});
   });
-  if (!messageModel) {
-    throw Error(`Can't create a message`);
-  }
-  return messageModel;
+
+  return createdMessage;
 }
 
 async function getMessages(ipv4, countryCode, type, prevLastId) {
@@ -225,11 +264,18 @@ async function likeMessage(messageId, ipv4) {
   }
 
   const existLikeHistory = await LikeHistory.findOne({
-    where: {
-      created_at: {
-        [Op.gte]: moment().subtract(1, 'days').toDate(),
+    where: [
+      {
+        message_id: {
+          [Op.eq]: messageId,
+        },
       },
-    },
+      {
+        created_at: {
+          [Op.gte]: moment().subtract(1, 'days').toDate(),
+        },
+      },
+    ],
   });
 
   let like = true;
@@ -267,7 +313,13 @@ async function likeMessage(messageId, ipv4) {
     await countryStatus.save({transaction: t, silent: true});
   });
 
-  return {like: like, data: getMessage};
+  return {
+    like: like,
+    data: _.omit(
+        getMessage.toJSON(),
+        ['anonymousUser.country.countryStatus'],
+    ),
+  };
 }
 
 module.exports = {
