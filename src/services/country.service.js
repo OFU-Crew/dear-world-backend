@@ -185,7 +185,7 @@ async function getCountryStatusMessageCount(countryCode) {
 
     return {
       'country': 'all',
-      'messageCount': allMessageCount[0].sumMessageCount,
+      'messageCount': Number(allMessageCount[0].sumMessageCount),
     };
   } else {
     const countryMessageCount = await CountryStatus.findOne({
