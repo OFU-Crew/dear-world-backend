@@ -170,20 +170,18 @@ async function getCountryStatusMessageCount(countryCode) {
   }
 
   if (countryCode === null) {
-    const allMessageCount = await CountryStatus.findAll(
-        {
-          attributes: [
-            [
-              Sequelize.fn(
-                  'max',
-                  Sequelize.col('message_count'),
-              ),
-              'sumMessageCount',
-            ],
-          ],
-          raw: true,
-        },
-    );
+    const allMessageCount = await CountryStatus.findAll({
+      attributes: [
+        [
+          Sequelize.fn(
+              'sum',
+              Sequelize.col('message_count'),
+          ),
+          'sumMessageCount',
+        ],
+      ],
+      raw: true,
+    });
 
     return {
       'country': 'all',
