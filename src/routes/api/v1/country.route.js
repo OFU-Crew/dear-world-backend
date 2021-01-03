@@ -3,7 +3,7 @@ const router = new express.Router();
 const countryController = require('../../../controllers/country.controller');
 
 router.get('/', countryController.getCountries);
-router.get('/:countryId/status', countryController.getCountryStatus);
+router.get('/:countryCode/status', countryController.getCountryStatus);
 router.get('/rank', countryController.getCountryRank);
 router.get('/messagecount', countryController.getCountryStatusMessageCount);
 router.get('/count', countryController.getCountriesCount);
