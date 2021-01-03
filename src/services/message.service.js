@@ -63,6 +63,10 @@ const findMessageBaseOption = {
   ],
 };
 
+function addShareLinkToMessage(targetMessage, messageId) {
+  targetMessage.shareLink = `${ENDPOINT_URL}/messages/${messageId}`;
+}
+
 async function addMessage(anonymousUserId, content) {
   let createdMessage = {};
 
@@ -109,7 +113,7 @@ async function addMessage(anonymousUserId, content) {
 
     await getCountryStatus.save({transaction: t, silent: true});
   });
-
+  addShareLinkToMessage(createdMessage, createdMessage.id);
   return createdMessage;
 }
 
@@ -171,6 +175,7 @@ async function getMessages(ipv4, countryCode, type, prevLastId) {
   const messages = messageModels.map((model) => {
     const data = model.get();
     data.like = likedMessageIdList.includes(data.id);
+    addShareLinkToMessage(data, data.id);
     return data;
   });
   return {
@@ -237,6 +242,7 @@ async function getMessage(ipv4, messageId, countryCode, position) {
     },
   });
   messageData.like = !!existLikeHistory;
+  addShareLinkToMessage(messageData, messageData.id);
   return messageData;
 }
 
@@ -346,14 +352,9 @@ async function likeMessage(messageId, ipv4) {
   };
 }
 
-function getShareLink(messageId) {
-  return `${ENDPOINT_URL}/messages/${messageId}`;
-}
-
 module.exports = {
   addMessage,
   getMessage,
   getMessages,
   likeMessage,
-  getShareLink,
 };
