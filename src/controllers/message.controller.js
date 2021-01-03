@@ -87,22 +87,9 @@ async function postLikeMessage(req, res, next) {
   }
 }
 
-async function getShareLink(req, res, next) {
-  const {messageId} = req.params;
-  try {
-    const shareLink = messageService.getShareLink(messageId);
-    res.status(200).json(Success({
-      shareLink,
-    }));
-  } catch (err) {
-    res.status(200).json(Failure(err.message));
-  }
-}
-
 module.exports = {
   addMessage,
   getMessage,
   getMessages,
   postLikeMessage,
-  getShareLink,
 };
