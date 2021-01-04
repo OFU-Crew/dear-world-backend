@@ -18,7 +18,13 @@ async function addEmoji(unicode) {
   return result;
 }
 
+async function getEmojis() {
+  const emojis = await Emoji.findAll({});
+  return emojis;
+}
+
 module.exports = {
   getRandomEmoji,
   addEmoji,
+  getEmojis,
 };
