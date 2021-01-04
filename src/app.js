@@ -17,7 +17,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const router = require('./routes');
 const morgan = require('./middlewares/morgan');
-const limiter = require('./middlewares/express_rate_limit');
 const db = require('./models');
 const cors = require('cors');
 const {
@@ -25,10 +24,17 @@ const {
   scriptCountryStatus,
   scriptEmoji,
 } = require('./scripts');
+const isDisableKeepAlive = false;
+
+app.use((req, res, next) => {
+  if (isDisableKeepAlive === true) {
+    res.set('Connection', 'close');
+  }
+  next();
+});
 
 app.use(morgan);
 app.use(cors());
-app.use(limiter);
 app.use(express.json());
 app.use(router);
 app.use((req, res, next) => {
@@ -54,6 +60,7 @@ db.sequelize.sync(syncOptions)
       }
 
       app.listen(PORT, '0.0.0.0', () => {
+        process.send('ready');
         console.log(`Listening at ${PORT}`);
       });
     })
@@ -61,3 +68,11 @@ db.sequelize.sync(syncOptions)
       console.error(err);
       process.exit();
     });
+
+process.on('SIGINT', () => {
+  isDisableKeepAlive = true;
+  app.close(() => {
+    console.log('server closed');
+    process.exit(0);
+  });
+});
