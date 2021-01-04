@@ -25,6 +25,14 @@ const {
   scriptCountryStatus,
   scriptEmoji,
 } = require('./scripts');
+const isDisableKeepAlive = false;
+
+app.use((req, res, next) => {
+  if (isDisableKeepAlive === true) {
+    res.set('Connection', 'close');
+  }
+  next();
+});
 
 app.use(morgan);
 app.use(cors());
@@ -54,6 +62,7 @@ db.sequelize.sync(syncOptions)
       }
 
       app.listen(PORT, '0.0.0.0', () => {
+        process.send('ready');
         console.log(`Listening at ${PORT}`);
       });
     })
@@ -61,3 +70,11 @@ db.sequelize.sync(syncOptions)
       console.error(err);
       process.exit();
     });
+
+process.on('SIGINT', () => {
+  isDisableKeepAlive = true;
+  app.close(() => {
+    console.log('server closed');
+    process.exit(0);
+  });
+});
