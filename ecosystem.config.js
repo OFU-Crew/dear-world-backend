@@ -9,11 +9,10 @@ module.exports = {
       listen_timeout: 50000,
       kill_timeout: 5000,
       env: {
-        NODE_ENV: 'develop',
+        'NODE_ENV': 'develop',
       },
       env_production: {
-        NODE_ENV: 'production',
-        PORT: 3000,
+        'NODE_ENV': 'production',
       },
     },
   ],
