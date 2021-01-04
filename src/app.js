@@ -17,7 +17,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const router = require('./routes');
 const morgan = require('./middlewares/morgan');
-const limiter = require('./middlewares/express_rate_limit');
 const db = require('./models');
 const cors = require('cors');
 const {
@@ -28,7 +27,6 @@ const {
 
 app.use(morgan);
 app.use(cors());
-app.use(limiter);
 app.use(express.json());
 app.use(router);
 app.use((req, res, next) => {
