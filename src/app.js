@@ -24,7 +24,7 @@ const {
   scriptCountryStatus,
   scriptEmoji,
 } = require('./scripts');
-const isDisableKeepAlive = false;
+let isDisableKeepAlive = false;
 
 app.use((req, res, next) => {
   if (isDisableKeepAlive === true) {
@@ -59,22 +59,22 @@ db.sequelize.sync(syncOptions)
         await scriptEmoji();
       }
 
-      app.listen(PORT, '0.0.0.0', () => {
+      const server = app.listen(PORT, '0.0.0.0', () => {
         if (process.send !== undefined) {
           process.send('ready');
         }
         console.log(`Listening at ${PORT}`);
+      });
+
+      process.on('SIGINT', () => {
+        isDisableKeepAlive = true;
+        server.close(() => {
+          console.log('server closed');
+          process.exit(0);
+        });
       });
     })
     .catch((err) => {
       console.error(err);
       process.exit();
     });
-
-process.on('SIGINT', () => {
-  isDisableKeepAlive = true;
-  app.close(() => {
-    console.log('server closed');
-    process.exit(0);
-  });
-});
