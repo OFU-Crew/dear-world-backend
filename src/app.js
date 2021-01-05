@@ -60,7 +60,9 @@ db.sequelize.sync(syncOptions)
       }
 
       app.listen(PORT, '0.0.0.0', () => {
-        process.send('ready');
+        if (process.send !== undefined) {
+          process.send('ready');
+        }
         console.log(`Listening at ${PORT}`);
       });
     })
