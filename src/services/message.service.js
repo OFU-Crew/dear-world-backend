@@ -346,10 +346,7 @@ async function likeMessage(messageId, ipv4) {
   const messageData = getMessage.get();
   messageData.like = like;
   addShareLinkToMessage(messageData, getMessage.id);
-  return {
-    like: like,
-    data: messageData,
-  };
+  return messageData;
 }
 
 module.exports = {
