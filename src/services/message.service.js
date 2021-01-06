@@ -247,51 +247,27 @@ async function getMessage(ipv4, messageId, countryCode, position) {
 }
 
 async function likeMessage(messageId, ipv4) {
-  const getMessage = await Message.findOne({
-    where: {
-      id: {
-        [Op.eq]: messageId,
-      },
-    },
+  const findOption = clone(findMessageBaseOption);
+  _.set(findOption, 'where.id', {
+    [Op.eq]: messageId,
+  });
+  _.set(findOption, 'include.0.include.0', {
+    model: Country,
+    as: 'country',
     attributes: [
-      'id',
-      'content',
-      'likeCount',
-      'createdAt',
+      'code',
+      'fullName',
+      'emojiUnicode',
     ],
+    required: true,
     include: {
-      model: AnonymousUser,
-      as: 'anonymousUser',
-      attributes: [
-        'id',
-        'nickname',
-        'emojiId',
-      ],
+      model: CountryStatus,
+      as: 'countryStatus',
       required: true,
-      include: {
-        model: Country,
-        as: 'country',
-        attributes: [
-          'id',
-          'code',
-          'fullName',
-          'emojiUnicode',
-        ],
-        required: true,
-        include: {
-          model: CountryStatus,
-          as: 'countryStatus',
-          attributes: [
-            'id',
-            'messageCount',
-            'likeCount',
-            'population',
-          ],
-          required: true,
-        },
-      },
     },
   });
+
+  const getMessage = await Message.findOne(findOption);
 
   if (!getMessage) {
     throw Error(`The message does not exist`);
@@ -346,7 +322,13 @@ async function likeMessage(messageId, ipv4) {
   const messageData = getMessage.get();
   messageData.like = like;
   addShareLinkToMessage(messageData, getMessage.id);
-  return messageData;
+
+  const omitMessageData = _.omit(
+      messageData,
+      'anonymousUser.dataValues.country.dataValues.countryStatus',
+  );
+
+  return omitMessageData;
 }
 
 module.exports = {
