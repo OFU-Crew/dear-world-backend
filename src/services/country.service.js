@@ -116,6 +116,46 @@ async function getCountriesCount() {
   return {'countries': countriesCount};
 }
 
+async function getCountryCount(countryCode) {
+  const countryCount = await Country.findOne(
+      {
+        attributes: [
+          'id',
+          'code',
+          'fullName',
+          'emojiUnicode',
+        ],
+        where: {
+          code: {
+            [Op.eq]: countryCode,
+          },
+        },
+        include: [
+          {
+            model: CountryStatus,
+            as: 'countryStatus',
+            required: true,
+            attributes: [
+              'id',
+              'messageCount',
+              'likeCount',
+              [Sequelize.literal(
+                  `CAST(CASE 
+                WHEN message_count DIV 100 < 5
+                  THEN message_count DIV 100
+                ELSE 5
+              END AS UNSIGNED)`,
+              ), 'level'],
+              'population',
+            ],
+          },
+        ],
+      },
+  );
+
+  return countryCount;
+}
+
 async function getCountryRank() {
   const countryStatusRank = await Country.findAll(
       {
@@ -227,6 +267,7 @@ module.exports = {
   getCountryId,
   addCountryStatus,
   getCountryStatus,
+  getCountryCount,
   getCountriesCount,
   getCountryRank,
   getCountryStatusMessageCount,

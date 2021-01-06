@@ -78,6 +78,32 @@ async function getCountriesCount(req, res, next) {
   }
 }
 
+async function getCountryCount(req, res, next) {
+  const {countryCode} = req.params;
+  const countryCountKey = `countriesCount-{countryCode}`;
+
+  try {
+    const reply = await getAsyncReadonly(countryCountKey);
+
+    if (reply !== null) {
+      res.status(200).json(Success(JSON.parse(reply)));
+      return;
+    }
+
+    const countryCount = await countryService.getCountryCount(countryCode);
+
+    redisDefault.set(countryCountKey, JSON.stringify(countryCount));
+    redisDefault.expire(
+        countryCountKey,
+        60,
+    );
+
+    res.status(200).json(Success(countryCount));
+  } catch (err) {
+    res.status(200).json(Failure(err.message));
+  }
+}
+
 async function getCountryRank(req, res, next) {
   const countriesRankKey = 'countriesRank';
 
@@ -134,6 +160,7 @@ module.exports = {
   getCountries,
   getCountryStatus,
   getCountriesCount,
+  getCountryCount,
   getCountryRank,
   getCountryStatusMessageCount,
 };
