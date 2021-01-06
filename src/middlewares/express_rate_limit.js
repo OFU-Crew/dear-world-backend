@@ -6,11 +6,11 @@ const limiter = (prefix) => {
   return rateLimit({
     store: new RedisStore({
       client: redisDefault,
-      expiry: 300,
-      prefix,
+      expiry: 60,
+      prefix: prefix,
     }),
     windowMs: 1000,
-    max: 10,
+    max: 100,
   });
 };
 
