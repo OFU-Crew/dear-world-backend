@@ -33,6 +33,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(morgan);
 app.use(cors());
 app.use(express.json());

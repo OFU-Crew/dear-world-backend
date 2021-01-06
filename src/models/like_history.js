@@ -21,6 +21,11 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING(20),
       allowNull: false,
     },
+    like: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
   }, {
     sequelize,
     tableName: 'like_histories',

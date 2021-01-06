@@ -167,14 +167,21 @@ async function getMessages(ipv4, countryCode, type, prevLastId) {
       createdAt: {
         [Op.gte]: moment().subtract(1, 'days').toDate(),
       },
-      messageId: messageIdList,
+      messageId: {
+        [Op.in]: messageIdList,
+      },
     },
   }) || [];
-  const likedMessageIdList = likedMessageModelList.map(
-      (model) => model.get('messageId'));
+  const likedMessageLatestList = {};
+  for (const model of likedMessageModelList) {
+    _.set(likedMessageLatestList,
+        model.get('messageId'),
+        model.get('like'));
+  }
+
   const messages = messageModels.map((model) => {
     const data = model.get();
-    data.like = likedMessageIdList.includes(data.id);
+    data.like = likedMessageLatestList[data.id] || false;
     addShareLinkToMessage(data, data.id);
     return data;
   });
@@ -240,8 +247,12 @@ async function getMessage(ipv4, messageId, countryCode, position) {
         [Op.gte]: moment().subtract(1, 'days').toDate(),
       },
     },
+    order: [
+      ['id', 'DESC'],
+    ],
+    limit: 1,
   });
-  messageData.like = !!existLikeHistory;
+  messageData.like = existLikeHistory.like;
   addShareLinkToMessage(messageData, messageData.id);
   return messageData;
 }
@@ -268,44 +279,33 @@ async function likeMessage(messageId, ipv4) {
   });
 
   const getMessage = await Message.findOne(findOption);
-
   if (!getMessage) {
     throw Error(`The message does not exist`);
   }
-
-  const existLikeHistory = await LikeHistory.findOne({
-    where: {
-      messageId: {
-        [Op.eq]: messageId,
-      },
-      createdAt: {
-        [Op.gte]: moment().subtract(1, 'days').toDate(),
-      },
-    },
-  });
-
+  const countryStatus = getMessage.anonymousUser.country.countryStatus;
   let like = true;
 
-  const countryStatus = getMessage.anonymousUser.country.countryStatus;
-
   await sequelize.transaction(async (t) => {
-    if (existLikeHistory) {
-      if (getMessage.likeCount === 0) {
-        throw Error('The message like cannot decrease');
-      }
+    const existLikeHistory = await LikeHistory.findOne({
+      where: {
+        messageId: {
+          [Op.eq]: messageId,
+        },
+        createdAt: {
+          [Op.gte]: moment().subtract(1, 'days').toDate(),
+        },
+      },
+      order: [
+        ['id', 'DESC'],
+      ],
+      limit: 1,
+    }, {transaction: t});
 
-      if (countryStatus.likeCount === 0) {
-        throw Error('The country status like cannot decrease');
-      }
-
-      getMessage.likeCount -= 1;
-      countryStatus.likeCount -= 1;
-      await existLikeHistory.destroy({transaction: t});
-      like = false;
-    } else {
+    if (existLikeHistory === null || existLikeHistory.like === false) {
       const likeHistory = await LikeHistory.create({
         messageId: messageId,
         ipv4: ipv4,
+        like: true,
       }, {
         transaction: t,
       });
@@ -314,7 +314,33 @@ async function likeMessage(messageId, ipv4) {
       }
       getMessage.likeCount += 1;
       countryStatus.likeCount += 1;
+
+      like = true;
+    } else {
+      if (getMessage.likeCount === 0) {
+        throw Error('The message like cannot decrease');
+      }
+
+      if (countryStatus.likeCount === 0) {
+        throw Error('The country status like cannot decrease');
+      }
+
+      const likeHistory = await LikeHistory.create({
+        messageId: messageId,
+        ipv4: ipv4,
+        like: false,
+      }, {
+        transaction: t,
+      });
+      if (!likeHistory) {
+        throw Error(`Can't create a like history`);
+      }
+      getMessage.likeCount -= 1;
+      countryStatus.likeCount -= 1;
+
+      like = false;
     }
+
     await getMessage.save({transaction: t, silent: true});
     await countryStatus.save({transaction: t, silent: true});
   });
