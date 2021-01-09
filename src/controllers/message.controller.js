@@ -39,9 +39,7 @@ async function getMessage(req, res, next) {
   } = req.query;
   const getMessageKey = `message-${messageId}`;
 
-  const ipv4 = req.headers['x-forwarded-for'] !== undefined ?
-                req.headers['x-forwarded-for'].split(',').pop().trim() :
-                req.connection.remoteAddress;
+  const ipv4 = req.headers['x-real-ip'] || req.connection.remoteAddress;
   try {
     const reply = await getAsyncReadonly(getMessageKey);
 
@@ -80,9 +78,7 @@ async function getMessages(req, res, next) {
        'recent'}-${lastId ||
          'initial'}`;
 
-  const ipv4 = req.headers['x-forwarded-for'] !== undefined ?
-                req.headers['x-forwarded-for'].split(',').pop().trim() :
-                req.connection.remoteAddress;
+  const ipv4 = req.headers['x-real-ip'] || req.connection.remoteAddress;
   try {
     const reply = await getAsyncReadonly(getMessagesKey);
 
@@ -108,9 +104,7 @@ async function getMessages(req, res, next) {
 
 async function postLikeMessage(req, res, next) {
   const {messageId} = req.params;
-  const ipv4 = req.headers['x-forwarded-for'] !== undefined ?
-                req.headers['x-forwarded-for'].split(',').pop().trim() :
-                req.connection.remoteAddress;
+  const ipv4 = req.headers['x-real-ip'] || req.connection.remoteAddress;
 
   if (messageId === undefined) {
     res.status(200).json(Failure('messageId must be exist'));
