@@ -7,6 +7,7 @@ async function getRandomEmoji() {
         'attributes': [
           'id',
           'unicode',
+          'imageUrl',
         ],
       },
   );
@@ -14,7 +15,15 @@ async function getRandomEmoji() {
 }
 
 async function addEmoji(unicode) {
-  const result = await Emoji.create({unicode: unicode});
+  const lowerCaseUnicode = unicode.toLowerCase();
+  const emojiFromUnicode = String.fromCodePoint(parseInt(lowerCaseUnicode, 16));
+  const imageUrl = `https://twemoji.maxcdn.com/v/latest/72x72/${unicode}.png`;
+  const result = await Emoji.create(
+      {
+        unicode: emojiFromUnicode,
+        imageUrl: imageUrl,
+      },
+  );
   return result;
 }
 

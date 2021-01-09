@@ -40,7 +40,7 @@ const emojiService = require('../services/emoji.service');
 async function main() {
   for (const data of dataList) {
     try {
-      await emojiService.addEmoji(String.fromCodePoint(parseInt(data, 16)));
+      await emojiService.addEmoji(data);
     } catch (error) {
     }
   }
