@@ -79,7 +79,6 @@ async function getMessages(req, res, next) {
     'whole-world'}-${type ||
        'recent'}-${lastId ||
          'initial'}`;
-  console.log(getMessagesKey);
 
   const ipv4 = req.headers['x-forwarded-for'] !== undefined ?
                 req.headers['x-forwarded-for'].split(',').pop().trim() :

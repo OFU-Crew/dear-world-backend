@@ -288,6 +288,9 @@ async function likeMessage(messageId, ipv4) {
   await sequelize.transaction(async (t) => {
     const existLikeHistory = await LikeHistory.findOne({
       where: {
+        ipv4: {
+          [Op.eq]: ipv4,
+        },
         messageId: {
           [Op.eq]: messageId,
         },
