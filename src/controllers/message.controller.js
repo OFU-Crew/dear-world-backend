@@ -98,7 +98,7 @@ async function getMessages(req, res, next) {
     redisDefault.set(getMessagesKey, JSON.stringify(result));
     redisDefault.expire(
         getMessagesKey,
-        5,
+        1,
     );
 
     res.status(200).json(Success(result));
