@@ -55,6 +55,7 @@ const findMessageBaseOption = {
           as: 'emoji',
           attributes: [
             'unicode',
+            'imageUrl',
           ],
           required: true,
         },
