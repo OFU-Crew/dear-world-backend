@@ -1,17 +1,37 @@
-const {Emoji, Sequelize} = require('../models');
+const {Emoji} = require('../models');
+const {redisDefault, getAsyncReadonly} = require('../redis');
+const RANDOM_EMOJIS_CACHE_KEY = 'emojis';
 
 async function getRandomEmoji() {
-  const emojiModel = await Emoji.findOne(
-      {
-        'order': [Sequelize.literal('rand()')],
-        'attributes': [
-          'id',
-          'unicode',
-          'imageUrl',
-        ],
-      },
-  );
-  return emojiModel;
+  const cacheData = await getAsyncReadonly(RANDOM_EMOJIS_CACHE_KEY);
+  let emojis = null;
+  if (cacheData !== null) {
+    emojis = JSON.parse(cacheData);
+  } else {
+    const emojiModels = await Emoji.findAll(
+        {
+          'attributes': [
+            'id',
+            'unicode',
+            'imageUrl',
+          ],
+        },
+    );
+    emojis = emojiModels.map((model) => {
+      return model.get();
+    });
+  }
+  if (!emojis || emojis.length <= 0) {
+    throw Error(`Can't find emojis`);
+  }
+  // Save cacheData
+  if (!cacheData) {
+    redisDefault.set(RANDOM_EMOJIS_CACHE_KEY, JSON.stringify(emojis));
+    redisDefault.expire(RANDOM_EMOJIS_CACHE_KEY, 60 * 60); // 1 hour
+  }
+  const randomIndex = Math.floor(Math.random() * emojis.length);
+  const randomEmoji = emojis[randomIndex];
+  return randomEmoji;
 }
 
 async function addEmoji(unicode) {
