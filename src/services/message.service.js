@@ -254,7 +254,12 @@ async function getMessage(ipv4, messageId, countryCode, position) {
     ],
     limit: 1,
   });
-  messageData.like = existLikeHistory.like;
+
+  if (existLikeHistory !== null) {
+    messageData.like = existLikeHistory.like;
+  } else {
+    messageData.like = false;
+  }
   addShareLinkToMessage(messageData, messageData.id);
   return messageData;
 }
