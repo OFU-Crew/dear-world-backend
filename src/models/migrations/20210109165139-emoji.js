@@ -7,15 +7,17 @@ module.exports = {
     try {
       const emojis = await Emoji.findAll({}, {transaction: t});
 
-      emojis.map(
-          async (item) => {
-            const unicodeStr = item.unicode.codePointAt(0).toString(16);
-            const imageUrl = `https://twemoji.maxcdn.com/v/latest/72x72/${unicodeStr.toLowerCase()}.png`;
-            await item.update({
-              'imageUrl': imageUrl,
-            });
-          },
-      );
+      for (const emoji of emojis) {
+        const unicodeStr = emoji.unicode.codePointAt(0).toString(16);
+        const imageUrl = `https://twemoji.maxcdn.com/v/latest/72x72/${unicodeStr.toLowerCase()}.png`;
+        await emoji.update({
+          'imageUrl': imageUrl,
+        }, {
+          transaction: t,
+        });
+      }
+
+      await t.commit();
     } catch (error) {
       await t.rollback();
       throw error;
@@ -26,13 +28,15 @@ module.exports = {
     const emojis = await Emoji.findAll({});
     const t = await queryInterface.sequelize.transaction();
     try {
-      emojis.map(
-          (item) => {
-            item.update({
-              'imageUrl': '',
-            });
-          },
-      );
+      for (const emoji of emojis) {
+        emoji.update({
+          'imageUrl': '',
+        }, {
+          transaction: t,
+        });
+      }
+
+      t.commit();
     } catch (error) {
       await t.rollback();
       throw error;

@@ -47,6 +47,7 @@ const findMessageBaseOption = {
             'code',
             'fullName',
             'emojiUnicode',
+            'imageUrl',
           ],
           required: true,
         },
@@ -253,7 +254,12 @@ async function getMessage(ipv4, messageId, countryCode, position) {
     ],
     limit: 1,
   });
-  messageData.like = existLikeHistory.like;
+
+  if (existLikeHistory !== null) {
+    messageData.like = existLikeHistory.like;
+  } else {
+    messageData.like = false;
+  }
   addShareLinkToMessage(messageData, messageData.id);
   return messageData;
 }
@@ -270,6 +276,7 @@ async function likeMessage(messageId, ipv4) {
       'code',
       'fullName',
       'emojiUnicode',
+      'imageUrl',
     ],
     required: true,
     include: {
