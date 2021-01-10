@@ -32,6 +32,10 @@ module.exports = (sequelize) => {
       allowNull: false,
       unique: true,
     },
+    imageUrl: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
   }, {
     sequelize,
     tableName: 'countries',
