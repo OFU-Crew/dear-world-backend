@@ -15,6 +15,7 @@ async function getCountries() {
           'code',
           'fullName',
           'emojiUnicode',
+          'imageUrl',
         ],
       },
   );
@@ -65,6 +66,7 @@ async function getCountryStatus(countryCode) {
         'code',
         'fullName',
         'emojiUnicode',
+        'imageUrl',
       ],
       where: {
         code: {
@@ -89,6 +91,7 @@ async function getCountriesCount() {
           'code',
           'fullName',
           'emojiUnicode',
+          'imageUrl',
         ],
         include: [
           {
@@ -124,6 +127,7 @@ async function getCountryCount(countryCode) {
           'code',
           'fullName',
           'emojiUnicode',
+          'imageUrl',
         ],
         where: {
           code: {
@@ -164,6 +168,7 @@ async function getCountryRank() {
           'code',
           'fullName',
           'emojiUnicode',
+          'imageUrl',
         ],
         include: [
           {
@@ -245,6 +250,7 @@ async function getCountryStatusMessageCount(countryCode) {
           'code',
           'fullName',
           'emojiUnicode',
+          'imageUrl',
         ],
         where: {
           code: {

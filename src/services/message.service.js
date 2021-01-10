@@ -47,6 +47,7 @@ const findMessageBaseOption = {
             'code',
             'fullName',
             'emojiUnicode',
+            'imageUrl',
           ],
           required: true,
         },
@@ -270,6 +271,7 @@ async function likeMessage(messageId, ipv4) {
       'code',
       'fullName',
       'emojiUnicode',
+      'imageUrl',
     ],
     required: true,
     include: {
