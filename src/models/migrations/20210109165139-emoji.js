@@ -8,10 +8,10 @@ module.exports = {
       const emojis = await Emoji.findAll({}, {transaction: t});
 
       emojis.map(
-          (item) => {
+          async (item) => {
             const unicodeStr = item.unicode.codePointAt(0).toString(16);
             const imageUrl = `https://twemoji.maxcdn.com/v/latest/72x72/${unicodeStr.toLowerCase()}.png`;
-            item.update({
+            await item.update({
               'imageUrl': imageUrl,
             });
           },
