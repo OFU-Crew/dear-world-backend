@@ -188,11 +188,6 @@ async function getCountriesRank() {
               ), 'level'],
               'population',
             ],
-            where: {
-              messageCount: {
-                [Op.gt]: 0,
-              },
-            },
           },
         ],
         order: [
