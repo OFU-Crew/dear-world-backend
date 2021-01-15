@@ -160,7 +160,7 @@ async function getCountryCount(countryCode) {
   return countryCount;
 }
 
-async function getCountryRank() {
+async function getCountriesRank() {
   const countryStatusRank = await Country.findAll(
       {
         attributes: [
@@ -205,7 +205,8 @@ async function getCountryRank() {
             'DESC',
           ],
         ],
-        limit: 10,
+        raw: true,
+        nest: true,
       },
   );
 
@@ -275,6 +276,6 @@ module.exports = {
   getCountryStatus,
   getCountryCount,
   getCountriesCount,
-  getCountryRank,
+  getCountriesRank,
   getCountryStatusMessageCount,
 };

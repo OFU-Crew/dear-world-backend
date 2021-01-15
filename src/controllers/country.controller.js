@@ -104,26 +104,27 @@ async function getCountryCount(req, res, next) {
   }
 }
 
-async function getCountryRank(req, res, next) {
+async function getCountriesRank(req, res, next) {
   const countriesRankKey = 'countriesRank';
 
   try {
     const reply = await getAsyncReadonly(countriesRankKey);
-
+    let countriesRank = null;
     if (reply !== null) {
-      res.status(200).json(Success(JSON.parse(reply)));
-      return;
+      countriesRank = JSON.parse(reply);
+    } else {
+      countriesRank = await countryService.getCountriesRank();
+      redisDefault.set(countriesRankKey, JSON.stringify(countriesRank));
+      redisDefault.expire(
+          countriesRankKey,
+          5,
+      );
     }
-
-    const countryRank = await countryService.getCountryRank();
-
-    redisDefault.set(countriesRankKey, JSON.stringify(countryRank));
-    redisDefault.expire(
-        countriesRankKey,
-        5,
-    );
-
-    res.status(200).json(Success(countryRank));
+    if (!countriesRank) {
+      throw Error(`Can't find countriesRank`);
+    }
+    countriesRank.ranking = countriesRank.ranking.slice(0, 10);
+    res.status(200).json(Success(countriesRank));
   } catch (err) {
     res.status(200).json(Failure(err.message));
   }
@@ -161,6 +162,6 @@ module.exports = {
   getCountryStatus,
   getCountriesCount,
   getCountryCount,
-  getCountryRank,
+  getCountriesRank,
   getCountryStatusMessageCount,
 };
