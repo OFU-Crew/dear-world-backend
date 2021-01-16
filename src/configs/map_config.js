@@ -1110,7 +1110,7 @@ const maps = [
   {name: 'Slovenia', countryId: 'SI', locations: [{x: 39, y: 25}]},
   {name: 'Croatia', countryId: 'HR', locations: [{x: 40, y: 25}]},
   {name: 'Bosnia', countryId: 'BA', locations: [{x: 40, y: 26}]},
-  {name: 'Serbia', countryId: 'CS', locations: [{x: 41, y: 26}]},
+  {name: 'Serbia', countryId: 'RS', locations: [{x: 41, y: 26}]},
   {name: 'Macedonia', countryId: 'MK', locations: [{x: 42, y: 27}]},
   {name: 'Albania', countryId: 'AL', locations: [{x: 41, y: 27}]},
   {name: 'Greece', countryId: 'GR', locations: [{x: 41, y: 28}]},
@@ -1316,7 +1316,7 @@ const maps = [
   {name: 'Cambodia', countryId: 'KH', locations: [{x: 59, y: 34}]},
   {
     name: 'Vietnam',
-    countryId: 'VT',
+    countryId: 'VN',
     locations: [
       {x: 60, y: 33},
       {x: 60, y: 34},
@@ -1661,7 +1661,7 @@ const maps = [
   {name: 'Cameroon', countryId: 'CM', locations: [{x: 39, y: 35}]},
   {
     name: 'Equatorial Guinea',
-    countryId: 'CQ',
+    countryId: 'GQ',
     locations: [{x: 39, y: 36}],
   },
   {name: 'Gabon', countryId: 'GA', locations: [{x: 39, y: 37}]},
