@@ -3,8 +3,13 @@ const {redisDefault, getAsyncReadonly} = require('../redis');
 const RANDOM_EMOJIS_CACHE_KEY = 'emojis';
 
 async function getRandomEmoji() {
-  const cacheData = await getAsyncReadonly(RANDOM_EMOJIS_CACHE_KEY);
   let emojis = null;
+  let cacheData = null;
+
+  if (redisDefault.status !== 'end') {
+    cacheData = await getAsyncReadonly(RANDOM_EMOJIS_CACHE_KEY);
+  }
+
   if (cacheData !== null) {
     emojis = JSON.parse(cacheData);
   } else {
@@ -26,8 +31,10 @@ async function getRandomEmoji() {
   }
   // Save cacheData
   if (!cacheData) {
-    redisDefault.set(RANDOM_EMOJIS_CACHE_KEY, JSON.stringify(emojis));
-    redisDefault.expire(RANDOM_EMOJIS_CACHE_KEY, 60 * 60); // 1 hour
+    if (redisDefault.status !== 'end') {
+      redisDefault.set(RANDOM_EMOJIS_CACHE_KEY, JSON.stringify(emojis));
+      redisDefault.expire(RANDOM_EMOJIS_CACHE_KEY, 60 * 60); // 1 hour
+    }
   }
   const randomIndex = Math.floor(Math.random() * emojis.length);
   const randomEmoji = emojis[randomIndex];
