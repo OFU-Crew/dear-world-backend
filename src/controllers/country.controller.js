@@ -129,7 +129,7 @@ async function getCountriesRank(req, res, next) {
 
   try {
     let countriesRank = null;
-    const reply = null;
+    let reply = null;
     if (redisDefault.status !== 'end') {
       reply = await getAsyncReadonly(countriesRankKey);
     }
@@ -161,7 +161,7 @@ async function getCountryRank(req, res, next) {
   const countriesRankKey = 'countriesRank';
   const {countryCode} = req.params;
   try {
-    const reply = null;
+    let reply = null;
     if (redisDefault.status !== 'end') {
       reply = await getAsyncReadonly(countriesRankKey);
     }
@@ -200,7 +200,7 @@ async function getCountryStatusMessageCount(req, res, next) {
   const messageCountKey = `messageCountKey-${countryCode || 'all'}`;
 
   try {
-    const reply = null;
+    let reply = null;
     if (redisDefault.status !== 'end') {
       reply = await getAsyncReadonly(messageCountKey);
     }
