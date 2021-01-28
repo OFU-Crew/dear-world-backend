@@ -6,7 +6,10 @@ async function getCountries(req, res, next) {
   const countriesKey = 'countries';
 
   try {
-    const reply = await getAsyncReadonly(countriesKey);
+    let reply = null;
+    if (redisDefault.status !== 'end') {
+      reply = await getAsyncReadonly(countriesKey);
+    }
 
     if (reply !== null) {
       res.status(200).json(Success(JSON.parse(reply)));
@@ -15,11 +18,13 @@ async function getCountries(req, res, next) {
 
     const countries = await countryService.getCountries();
 
-    redisDefault.set(countriesKey, JSON.stringify({countries}));
-    redisDefault.expire(
-        countriesKey,
-        31 * 24 * 60 * 60,
-    );
+    if (redisDefault.status !== 'end') {
+      redisDefault.set(countriesKey, JSON.stringify({countries}));
+      redisDefault.expire(
+          countriesKey,
+          31 * 24 * 60 * 60,
+      );
+    }
 
     res.status(200).json(Success({countries}));
   } catch (err) {
@@ -32,7 +37,10 @@ async function getCountryStatus(req, res, next) {
   const countriesStatusKey = `countriesStatus-${countryCode}`;
 
   try {
-    const reply = await getAsyncReadonly(countriesStatusKey);
+    let reply = null;
+    if (redisDefault.status !== 'end') {
+      reply = await getAsyncReadonly(countriesStatusKey);
+    }
 
     if (reply !== null) {
       res.status(200).json(Success(JSON.parse(reply)));
@@ -41,11 +49,13 @@ async function getCountryStatus(req, res, next) {
 
     const data = await countryService.getCountryStatus(countryCode);
 
-    redisDefault.set(countriesStatusKey, JSON.stringify(data));
-    redisDefault.expire(
-        countriesStatusKey,
-        10,
-    );
+    if (redisDefault.status !== 'end') {
+      redisDefault.set(countriesStatusKey, JSON.stringify(data));
+      redisDefault.expire(
+          countriesStatusKey,
+          10,
+      );
+    }
 
     res.status(200).json(Success(data));
   } catch (err) {
@@ -57,7 +67,10 @@ async function getCountriesCount(req, res, next) {
   const countriesCountKey = 'countriesCount';
 
   try {
-    const reply = await getAsyncReadonly(countriesCountKey);
+    let reply = null;
+    if (redisDefault.status !== 'end') {
+      reply = await getAsyncReadonly(countriesCountKey);
+    }
 
     if (reply !== null) {
       res.status(200).json(Success(JSON.parse(reply)));
@@ -66,11 +79,13 @@ async function getCountriesCount(req, res, next) {
 
     const countriesCount = await countryService.getCountriesCount();
 
-    redisDefault.set(countriesCountKey, JSON.stringify(countriesCount));
-    redisDefault.expire(
-        countriesCountKey,
-        5 * 60,
-    );
+    if (redisDefault.status !== 'end') {
+      redisDefault.set(countriesCountKey, JSON.stringify(countriesCount));
+      redisDefault.expire(
+          countriesCountKey,
+          5 * 60,
+      );
+    }
 
     res.status(200).json(Success(countriesCount));
   } catch (err) {
@@ -83,7 +98,10 @@ async function getCountryCount(req, res, next) {
   const countryCountKey = `countriesCount-{countryCode}`;
 
   try {
-    const reply = await getAsyncReadonly(countryCountKey);
+    let reply = null;
+    if (redisDefault.status !== 'end') {
+      reply = await getAsyncReadonly(countryCountKey);
+    }
 
     if (reply !== null) {
       res.status(200).json(Success(JSON.parse(reply)));
@@ -92,11 +110,13 @@ async function getCountryCount(req, res, next) {
 
     const countryCount = await countryService.getCountryCount(countryCode);
 
-    redisDefault.set(countryCountKey, JSON.stringify(countryCount));
-    redisDefault.expire(
-        countryCountKey,
-        60,
-    );
+    if (redisDefault.status !== 'end') {
+      redisDefault.set(countryCountKey, JSON.stringify(countryCount));
+      redisDefault.expire(
+          countryCountKey,
+          60,
+      );
+    }
 
     res.status(200).json(Success(countryCount));
   } catch (err) {
@@ -108,17 +128,24 @@ async function getCountriesRank(req, res, next) {
   const countriesRankKey = 'countriesRank';
 
   try {
-    const reply = await getAsyncReadonly(countriesRankKey);
     let countriesRank = null;
+    const reply = null;
+    if (redisDefault.status !== 'end') {
+      reply = await getAsyncReadonly(countriesRankKey);
+    }
+
     if (reply !== null) {
       countriesRank = JSON.parse(reply);
     } else {
       countriesRank = await countryService.getCountriesRank();
-      redisDefault.set(countriesRankKey, JSON.stringify(countriesRank));
-      redisDefault.expire(
-          countriesRankKey,
-          5,
-      );
+
+      if (redisDefault.status !== 'end') {
+        redisDefault.set(countriesRankKey, JSON.stringify(countriesRank));
+        redisDefault.expire(
+            countriesRankKey,
+            5,
+        );
+      }
     }
     if (!countriesRank) {
       throw Error(`Can't find countriesRank`);
@@ -134,17 +161,24 @@ async function getCountryRank(req, res, next) {
   const countriesRankKey = 'countriesRank';
   const {countryCode} = req.params;
   try {
-    const reply = await getAsyncReadonly(countriesRankKey);
+    const reply = null;
+    if (redisDefault.status !== 'end') {
+      reply = await getAsyncReadonly(countriesRankKey);
+    }
     let countriesRank = null;
     if (reply !== null) {
       countriesRank = JSON.parse(reply);
     } else {
       countriesRank = await countryService.getCountriesRank();
-      redisDefault.set(countriesRankKey, JSON.stringify(countriesRank));
-      redisDefault.expire(
-          countriesRankKey,
-          5,
-      );
+
+
+      if (redisDefault.status !== 'end') {
+        redisDefault.set(countriesRankKey, JSON.stringify(countriesRank));
+        redisDefault.expire(
+            countriesRankKey,
+            5,
+        );
+      }
     }
     if (!countriesRank) {
       throw Error(`Can't find countriesRank`);
@@ -166,7 +200,10 @@ async function getCountryStatusMessageCount(req, res, next) {
   const messageCountKey = `messageCountKey-${countryCode || 'all'}`;
 
   try {
-    const reply = await getAsyncReadonly(messageCountKey);
+    const reply = null;
+    if (redisDefault.status !== 'end') {
+      reply = await getAsyncReadonly(messageCountKey);
+    }
 
     if (reply !== null) {
       res.status(200).json(Success(JSON.parse(reply)));
@@ -177,11 +214,14 @@ async function getCountryStatusMessageCount(req, res, next) {
         countryCode,
     );
 
-    redisDefault.set(messageCountKey, JSON.stringify(messageCount));
-    redisDefault.expire(
-        messageCountKey,
-        10,
-    );
+    if (redisDefault.status !== 'end') {
+      redisDefault.set(messageCountKey, JSON.stringify(messageCount));
+      redisDefault.expire(
+          messageCountKey,
+          10,
+      );
+    }
+
     res.status(200).json(Success(messageCount));
   } catch (error) {
     res.status(200).json(Failure(error.message));

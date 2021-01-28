@@ -6,7 +6,10 @@ async function getEmojis(req, res, next) {
   const emojisKey = 'emojis';
 
   try {
-    const reply = await getAsyncReadonly(emojisKey);
+    const reply = null;
+    if (redisDefault.status !== 'end') {
+      reply = await getAsyncReadonly(emojisKey);
+    }
 
     if (reply !== null) {
       res.status(200).json(Success(JSON.parse(reply)));
@@ -15,11 +18,13 @@ async function getEmojis(req, res, next) {
 
     const data = await emojiService.getEmojis();
 
-    redisDefault.set(emojisKey, JSON.stringify(data));
-    redisDefault.expire(
-        emojisKey,
-        31 * 24 * 60 * 60,
-    );
+    if (redisDefault.status !== 'end') {
+      redisDefault.set(emojisKey, JSON.stringify(data));
+      redisDefault.expire(
+          emojisKey,
+          31 * 24 * 60 * 60,
+      );
+    }
 
     res.status(200).json(Success(data));
   } catch (err) {
