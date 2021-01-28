@@ -33,19 +33,7 @@ async function getEmojis(req, res, next) {
 }
 
 async function getRandomEmoji(req, res, next) {
-  const emojisKey = 'emojis';
-
   try {
-    let reply = null;
-    if (redisDefault.status !== 'end') {
-      reply = await getAsyncReadonly(emojisKey);
-    }
-
-    if (reply !== null) {
-      res.status(200).json(Success(JSON.parse(reply)));
-      return;
-    }
-
     const data = await emojiService.getRandomEmoji();
     res.status(200).json(Success(data));
   } catch (err) {
