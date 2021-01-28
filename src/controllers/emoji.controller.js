@@ -6,7 +6,7 @@ async function getEmojis(req, res, next) {
   const emojisKey = 'emojis';
 
   try {
-    const reply = null;
+    let reply = null;
     if (redisDefault.status !== 'end') {
       reply = await getAsyncReadonly(emojisKey);
     }
