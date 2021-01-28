@@ -43,7 +43,10 @@ async function getMessage(req, res, next) {
                 req.headers['x-forwarded-for'].split(',').shift().trim() :
                 req.connection.remoteAddress;
   try {
-    const reply = await getAsyncReadonly(getMessageKey);
+    const reply = null;
+    if (redisDefault.status !== 'end') {
+      reply = await getAsyncReadonly(getMessageKey);
+    }
 
     if (reply !== null) {
       res.status(200).json(Success(JSON.parse(reply)));
@@ -57,11 +60,13 @@ async function getMessage(req, res, next) {
         position,
     );
 
-    redisDefault.set(getMessageKey, JSON.stringify(result));
-    redisDefault.expire(
-        getMessageKey,
-        5,
-    );
+    if (redisDefault.status !== 'end') {
+      redisDefault.set(getMessageKey, JSON.stringify(result));
+      redisDefault.expire(
+          getMessageKey,
+          5,
+      );
+    }
 
     res.status(200).json(Success(result));
   } catch (err) {
@@ -84,7 +89,10 @@ async function getMessages(req, res, next) {
                 req.headers['x-forwarded-for'].split(',').shift().trim() :
                 req.connection.remoteAddress;
   try {
-    const reply = await getAsyncReadonly(getMessagesKey);
+    const reply = null;
+    if (redisDefault.status !== 'end') {
+      reply = await getAsyncReadonly(getMessagesKey);
+    }
 
     if (reply !== null) {
       res.status(200).json(Success(JSON.parse(reply)));
@@ -94,11 +102,13 @@ async function getMessages(req, res, next) {
     const result = await messageService.getMessages(ipv4,
         _.upperCase(countryCode), type, lastId);
 
-    redisDefault.set(getMessagesKey, JSON.stringify(result));
-    redisDefault.expire(
-        getMessagesKey,
-        1,
-    );
+    if (redisDefault.status !== 'end') {
+      redisDefault.set(getMessagesKey, JSON.stringify(result));
+      redisDefault.expire(
+          getMessagesKey,
+          1,
+      );
+    }
 
     res.status(200).json(Success(result));
   } catch (err) {
