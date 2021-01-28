@@ -33,7 +33,7 @@ async function getRandomEmoji() {
   if (!cacheData) {
     if (redisDefault.status !== 'end') {
       redisDefault.set(RANDOM_EMOJIS_CACHE_KEY, JSON.stringify(emojis));
-      redisDefault.expire(RANDOM_EMOJIS_CACHE_KEY, 60 * 60); // 1 hour
+      redisDefault.expire(RANDOM_EMOJIS_CACHE_KEY, 31 * 24 * 60 * 60);
     }
   }
   const randomIndex = Math.floor(Math.random() * emojis.length);
