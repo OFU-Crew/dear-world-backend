@@ -89,7 +89,7 @@ async function getMessages(req, res, next) {
                 req.headers['x-forwarded-for'].split(',').shift().trim() :
                 req.connection.remoteAddress;
   try {
-    const reply = null;
+    let reply = null;
     if (redisDefault.status !== 'end') {
       reply = await getAsyncReadonly(getMessagesKey);
     }
