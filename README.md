@@ -11,6 +11,7 @@ The prerequesites are following.
 * .env.develop, .env.production, .env.test
 
 The .env contents are following.
+Please change .env.default file to what you want.
 ```
 MYSQL_HOST=localhost
 MYSQL_PORT=3306
