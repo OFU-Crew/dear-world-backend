@@ -27,6 +27,13 @@ module.exports = (sequelize) => {
       autoIncrement: true,
       primaryKey: true,
     },
+    category: {
+      type: DataTypes.ENUM([
+        'MESSAGE',
+      ]),
+      allowNull: false,
+      defaultValue: 'MESSAGE',
+    },
     isPassed: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
