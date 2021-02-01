@@ -3,17 +3,17 @@ const {Model, DataTypes} = require('sequelize');
 module.exports = (sequelize) => {
   class Report extends Model {
     static associate(models) {
-      this.hasOne(models.User, {
+      this.belongsTo(models.User, {
         foreignKey: 'anonymousUserId',
         as: 'suspect',
       });
 
-      this.hasOne(models.User, {
+      this.belongsTo(models.User, {
         foreignKey: 'anonymousUserId',
         as: 'reporter',
       });
 
-      this.hasOne(models.User, {
+      this.hasOne(models.ReportReason, {
         foreignKey: 'reportReasonId',
         as: 'report_reason',
       });

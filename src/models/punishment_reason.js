@@ -20,7 +20,7 @@ module.exports = (sequelize) => {
       unique: true,
     },
     punishment_day: {
-      type: DateTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       defaultValue: 1,
     },
